@@ -55,9 +55,9 @@ var U{},>=0;
 ###Contrainte(2et3)#######
 #si un véhicule k utilise le sommet j, il doit vérifier la loi de 1-kirchoff et doit etre le seul à utiliser ce sommet.
 s.t. UsingArc1{j in J,k in L} :
-		sum{i in J} X[i,j,k] - Y[j,k]=1;
+		sum{i in J} X[i,j,k] = Y[j,k];
 s.t. UsingArc2{j in J, k in L} :
-		sum{i in J} X[j,i,k] - Y[j,k]=1;
+		sum{i in J} X[j,i,k] = Y[j,k];
 ###Contrainte(4et5)#######
 ##pour chaque véhicule, on s'assure qu'il a un arc Départ du dépot
 s.t. ConnectDepotD{k in L}:
