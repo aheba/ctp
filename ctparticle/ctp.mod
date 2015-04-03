@@ -6,8 +6,6 @@ param nbl,>=1;
 param n,integer;
 #nombre de sommets peuvant etre visité.
 param m,integer;
-#nombre de type d'aide
-param t,integer;
 
 #depot centrale
 set Depot;
@@ -22,9 +20,6 @@ set Edge,within {i in V,j in V: i<>j /*&& i<j*/};
 
 #Ensemble de voiture
 set L:1..nbl;
-#Ensemble de type d'aide fournis "Sucre,eau....", dans notre cas l'ensemble =1
-#si on voudrai implemeter pour plusieurs type de d'aide, il faudra mettre un array de quantité pour chaque type d'aide pour les véhicules et ajouter une contraint pour qu'il ne dépasse pas la quantité du véhicule.
-set TofA:1..t;
 
 #########Constant#######
 #Distance Matrix
@@ -39,7 +34,7 @@ param Q,integer;
 #covering distance validated
 param delta{i in I,j in J}:= if c[i,j]<=cmax then 1 else 0;
 #quantité demandé de l'ensemble I(ens W couvert) pour chaque type d'aide
-param d{i in I,s in TofA},>=0;
+param d{i in I}, >= 0;
 #à définir...
 param W
 
@@ -49,7 +44,7 @@ var D{i in I,s in TofA,j in J,k in L},>=0;
 var X{i in J,j in J,k in L: i<>j /*&& i<j*/},binary;
 var Y{j in J,k in L},binary;
 ##a voir
-var U{},>=0;
+var U{}, >= 0;
 
 ###################Contrainte############################
 ###Contrainte(2et3)#######
@@ -68,13 +63,13 @@ s.t. ConnectDepotR{k in L}:
 ###Contrainte(6)########
 #Cette contraint vérifie le fait qu'une demande de quantité d'un noeud couvert par plusieur sommets J (sommet qu'on peut visiter) peuvent partager l'approvisionnement de la quantité demandée. 
 s.t. DemandSatisfaction{i in I,s in TofA}:
-	sum{j in J,k in L} delta[i,j]*D[i,s,j,k] >= d[i,s]
+	sum{j in J,k in L} delta[i,j]*D[i,j,k] >= d[i,s]
 ###Contrainte(7)#######
 s.t. linkdelevery{k in L,j in J}:
-	sum{i in I,s in TofA} W[s]*D[i,s,j,k] - Q*Y[j,k]<=0;
+	sum{i in I} W[s]*D[i,j,k] - Q*Y[j,k]<=0;
 ###Contrainte(8)#######
 s.t. thresholdCap{k in L}:
-	sum{s in TofA,i in I,j in J} W[s]*D[i,s,j,k]<= Q;
+	sum{i in I,j in J} W[s]*D[i,j,k]<= Q;
 ###Contrainte(9)#######
 ##A voir
 s.t. sub-tour{i in J,j in J,k in L}:
