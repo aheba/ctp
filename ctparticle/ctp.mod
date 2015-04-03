@@ -1,81 +1,120 @@
-#########Sets###########
+######### Sets ###########
 
 # Nombre de véhicules disponibles
 param l, >= 1;
-# Nombre de sommets à couvrir (W)
+# Nombre de sommets à couvrir
 param n, integer;
-# Nombre de sommets peuvant être visités (V)
+# Nombre de sommets atteignables
 param m, integer;
 
-#depot centrale
-set Depot;
-#c'est l'ensemble W des sommets couvert
-set I: 1..n;
-#c'est l'ensemble V des sommets qui peuvent etre visité.
-set J: 1..m; 
-# c'est l'ensemble contenant tous les sommets
-set V,within Depot union I union J;
-# c'est l'ensemble des combinaisons entre arcs
-set Edge,within {i in V,j in V: i<>j /*&& i<j*/};
+# Ensemble des sommets à couvrir
+set I, := 1..n;
+# Ensemble des sommets atteignables
+set J, := 1..m;
 
-#Ensemble de voiture
-set L:1..nbl;
+set Depot, := {0};
 
-#########Constant#######
-#Distance Matrix
-param C{(i,j) in E},>=0;
+# Ensemble des arcs entre les sommets atteignables (J)
+set E, within {i in J union Depot, j in J union Depot: i<>j};
 
-#distance max de couverture
-param cmax,integer;
+# Ensemble des véhicules disponibles
+set L, := 1..l;
 
-#quantité véhicule
-param Q,integer;
+########### Constantes ##########
+# Distance entre un sommet i et un sommet j
+param c{(i,j) in E}, >= 0;
 
-#covering distance validated
-param delta{i in I,j in J}:= if c[i,j]<=cmax then 1 else 0;
-#quantité demandé de l'ensemble I(ens W couvert) pour chaque type d'aide
+# Rayon de couverture d'un sommet de V
+param cmax, integer;
+
+# Capacité de chaque véhicule
+param Q, integer;
+
+# Variable binaire vraie si j couvre le sommet i
+param delta{i in I, j in J}, := if c[i,j] <= cmax then 1 else 0;
+
+# Quantité demandée pour chaque client i
 param d{i in I}, >= 0;
-#à définir...
-param W
+
+####### Variables de décision #######
+var D{i in I, j in J, k in L},>=0;
+var x{i in J, j in J, k in L: i<>j /*&& i<j*/}, binary;
+var y{j in J, k in L}, binary;
+var u{i in I, k in L}, >= 0;
+
+######## Fonction objectif #########
+minimize somme_couts_deplacement:
+	sum{i in I, j in J, k in L: i<>j} c[i,j] * x[i,j,k];
+
+############ Contraintes ##############
+
+# Contrainte(2) et (3)
+# Si un véhicule k utilise le sommet j, il doit vérifier la loi de 1-kirchoff et doit etre le seul à utiliser ce sommet
+s.t. sommet_atteignable_a_un_arc_entrant{j in J,k in L}:
+	sum{i in J} x[i,j,k] = y[j,k];
+s.t. sommet_atteignable_a_un_arc_sortant{j in J, k in L}:
+	sum{i in J} x[j,i,k] = y[j,k];
+
+# Contrainte (4) et (5)
+# Chaque tournée commence du dépôt
+s.t. tournee_commence_depot{k in L}:
+	sum{j in J} x[0,j,k] = 1;
+# Chaque tournée termine par le dépôt
+s.t. tournee_termine_depot{k in L}:
+	sum{j in J} x[j,0,k] = 1;
+
+# Contrainte (6)
+# Cette contrainte vérifie le fait qu'une demande de quantité d'un noeud couvert par plusieurs sommets J (sommets qu'on peut visiter) peuvent partager l'approvisionnement de la quantité demandée
+s.t. demande_satisfaite{i in I}:
+	sum{j in J,k in L} delta[i,j] * D[i,j,k] >= d[i];
+
+# Contrainte (7)
+s.t. distribution_sommet_atteignable{k in L,j in J}:
+	sum{i in I} D[i,j,k] <= Q * y[j,k];
+
+# Contrainte (8)
+s.t. capacite_vehicule{k in L}:
+	sum{i in I,j in J} D[i,j,k]<= Q;
+
+# Contrainte (9)
+s.t. sub_tour{i in J, j in J, k in L}:
+	u[i,k] - u[j,k] + (m + 1)*x[i,j,k] <= m;
+
+solve;
 
 
-####################Variable####################
-var D{i in I,s in TofA,j in J,k in L},>=0;
-var X{i in J,j in J,k in L: i<>j /*&& i<j*/},binary;
-var Y{j in J,k in L},binary;
-##a voir
-var U{}, >= 0;
+data;
 
-###################Contrainte############################
-###Contrainte(2et3)#######
-#si un véhicule k utilise le sommet j, il doit vérifier la loi de 1-kirchoff et doit etre le seul à utiliser ce sommet.
-s.t. UsingArc1{j in J,k in L} :
-		sum{i in J} X[i,j,k] = Y[j,k];
-s.t. UsingArc2{j in J, k in L} :
-		sum{i in J} X[j,i,k] = Y[j,k];
-###Contrainte(4et5)#######
-##pour chaque véhicule, on s'assure qu'il a un arc Départ du dépot
-s.t. ConnectDepotD{k in L}:
-	sum{j in J} X[0,j,k]=1;
-##et un arc de Retour au depot
-s.t. ConnectDepotR{k in L}:
-	sum{j in J} X[j,0,k]=1;
-###Contrainte(6)########
-#Cette contraint vérifie le fait qu'une demande de quantité d'un noeud couvert par plusieur sommets J (sommet qu'on peut visiter) peuvent partager l'approvisionnement de la quantité demandée. 
-s.t. DemandSatisfaction{i in I,s in TofA}:
-	sum{j in J,k in L} delta[i,j]*D[i,j,k] >= d[i,s]
-###Contrainte(7)#######
-s.t. linkdelevery{k in L,j in J}:
-	sum{i in I} W[s]*D[i,j,k] - Q*Y[j,k]<=0;
-###Contrainte(8)#######
-s.t. thresholdCap{k in L}:
-	sum{i in I,j in J} W[s]*D[i,j,k]<= Q;
-###Contrainte(9)#######
-##A voir
-s.t. sub-tour{i in J,j in J,k in L}:
-	U[i,k]-U[j,k]+(m+1)*X[i,j,k]<=m;
-########Objectif#########
-Minimise totale:
-	sum{i in I, j in J, k in L} c[i,j]*x[i,j,k];
+# Nombre de sommets atteignables (I)
+param n := 3;
+# Nombre de sommets à couvrir (J)
+param m := 3;
+# Nombre de véhicules (L)
+param l := 3;
+
+# Capacité d'un véhicule
+param cmax := 600;
+
+param : d :=
+1 10
+2 10
+3 10
+;
+
+
+param : E : c :=
+0 1 5.0
+0 2 5.0
+0 3 5.0
+1 0 5.0
+1 2 5.0
+1 3 5.0
+2 0 5.0
+2 1 5.0
+2 3 5.0
+3 0 5.0
+3 1 5.0
+3 2 5.0
+;
 
 end;
