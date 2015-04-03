@@ -1,11 +1,11 @@
 #########Sets###########
 
-#param Sets
-param nbl,>=1;
-#nombre de sommets W couvert
-param n,integer;
-#nombre de sommets peuvant etre visité.
-param m,integer;
+# Nombre de véhicules disponibles
+param l, >= 1;
+# Nombre de sommets à couvrir (W)
+param n, integer;
+# Nombre de sommets peuvant être visités (V)
+param m, integer;
 
 #depot centrale
 set Depot;
