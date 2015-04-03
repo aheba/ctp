@@ -63,10 +63,10 @@ s.t. sommet_atteignable_a_un_arc_sortant{j in J, k in L}:
 # Contrainte (4) et (5)
 # Chaque tournée commence du dépôt
 s.t. tournee_commence_depot{k in L}:
-	sum{j in J diff Depot} x[0,j,k] = 1;
+	sum{j in J} x[0,j,k] = 1;
 # Chaque tournée termine par le dépôt
 s.t. tournee_termine_depot{k in L}:
-	sum{j in J diff Depot} x[j,0,k] = 1;
+	sum{j in J} x[j,0,k] = 1;
 
 # Contrainte (6)
 # Cette contrainte vérifie le fait qu'une demande de quantité d'un 
@@ -84,8 +84,8 @@ s.t. capacite_vehicule{k in L}:
 	sum{i in I, j in J: i<>j} D[i,j,k]<= Q;
 
 # Contrainte (9)
-#s.t. sub_tour{i in J, j in J, k in L: i<>j}:
-#	u[i,k] - u[j,k] + (m + 1)*x[i,j,k] <= m;
+s.t. sub_tour{i in J, j in J, k in L: i<>j}:
+	u[i,k] - u[j,k] + (m+1)*x[i,j,k] <= m;
 
 solve;
 
