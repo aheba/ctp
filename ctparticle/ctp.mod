@@ -84,10 +84,25 @@ s.t. capacite_vehicule{k in L}:
 	sum{i in I, j in J: i<>j} D[i,j,k]<= Q;
 
 # Contrainte (9)
-s.t. sub_tour{i in J, j in J, k in L: i<>j}:
-	u[i,k] - u[j,k] + (m + 1)*x[i,j,k] <= m;
+#s.t. sub_tour{i in J, j in J, k in L: i<>j}:
+#	u[i,k] - u[j,k] + (m + 1)*x[i,j,k] <= m;
 
 solve;
+
+
+printf "La somme des distances/coûts des tournées est de %d\n", 
+	sum{i in I, j in J, k in L: i<>j} c[i,j] * x[i,j,k];
+printf "%d camions parmi %d ont été pris \n", 
+	sum{k in L} max{(i,j) in E: i<>j} x[i,j,k],l;
+
+printf 	"Camion  Sommet1   Sommet2   Distance\n";
+printf{k in L, (i,j) in E: x[i,j,k]>0}
+		"   %3d      %3d       %3d     %6g\n",
+		k, i, j, c[i,j];
+
+
+
+
 
 data;
 
@@ -96,13 +111,13 @@ param n := 3;
 # Nombre de sommets atteignables (J)
 param m := 3;
 # Nombre de véhicules (L)
-param l := 3;
+param l := 10;
 
 # Capacité d'un véhicule
-param Q := 200;
+param Q := 20000;
 
 # Rayon de couverture d'un point atteignable (J)
-param cmax := 600;
+param cmax := 60000;
 
 param : d :=
 1 10
