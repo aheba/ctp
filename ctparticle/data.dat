@@ -1,0 +1,55 @@
+data;
+
+# Nombre de sommets à couvrir (I)
+param n := 1;
+# Nombre de sommets atteignables (J)
+param m := 2;
+# Nombre de véhicules (L)
+param l := 10;
+
+# Capacité d'un véhicule
+param Q := 2;
+
+# Rayon de couverture d'un point atteignable (J)
+param cmax := 2;
+
+param : d :=
+1 10
+;
+set I:=
+1
+;
+set J:=
+2
+3
+;
+#set T:=
+#2;
+
+# Couts/distances entre deux somments atteignables (J)
+param : E : c :=
+0 1 2.0
+0 2 3.0
+0 3 3.0
+1 0 2.0
+1 2 3.0
+1 3 2.0
+2 0 2.0
+2 1 3.0
+2 3 1.0
+3 0 3.0
+3 1 2.0
+3 2 1.0
+
+0 0 0.0
+1 1 0.0
+2 2 0.0
+3 3 0.0
+;
+
+# Distance entre un sommet à couvrir i de I et
+# un somment atteignable j de J
+#param : dist :=
+#;
+
+end;
