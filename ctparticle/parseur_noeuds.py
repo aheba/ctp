@@ -48,16 +48,23 @@ import re # pour re.split()
 import sys # pour args
 import math # pour sqrt
 
+def float_or_int(value):
+  try:
+    int(value)
+    return int(value)
+  except ValueError:
+    return float(value)
+
 # Pour parser une chaine de la forme suivante :
 #       `id_point x_coord y_coord qty_demand...`
 # Ex:   `1    8    9    90`
 # NOTE: ne prend que les nombre_infos premiers éléments entiers
 # NOTE: si aucun élément, renvoit None
 def parser_ligne(ligne):
-    element_string = [i for i in re.split("\\D", ligne) if i]
+    element_string = [i for i in re.findall("\d+[.\d+]*", ligne) if i]
     # \D -> le délimiteur est "tout" sauf les entiers
     if len(element_string) >= 1:
-        return [int(element) for element in element_string]
+        return [float_or_int(element) for element in element_string]
     else:
         return None
 
@@ -86,43 +93,43 @@ def definir_noeuds_depuis_fichier_noeuds(nom_fichier):
         ligne_entiers = parser_ligne(ligne)     
         if numero_ligne == 1 and ligne_entiers != None:
             if len(ligne_entiers) != 1:
-                print "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne
-                print "Cette ligne définit le rayon de couverture des noeuds atteignables"
-                print "Forme: `valeur_rayon`"
+                print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne
+                print >> sys.stderr, "Cette ligne définit le rayon de couverture des noeuds atteignables"
+                print >> sys.stderr, "Forme: `valeur_rayon`"
                 sys.exit(1)
             rayon_couverture = ligne_entiers[0]
         elif numero_ligne == 2 and ligne_entiers != None:
             if len(ligne_entiers) != 1:
-                print "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne   
-                print "Cette ligne correspond au num_sommet du premier sommet 'non-atteignable'"
-                print "Tous les num_sommet < ce numéro seront des sommets à couvrir,"
-                print "tous les num_sommet >= ce numéro seront des sommets atteignables"
-                print "Forme: `numero_sommet`"
-                print "Exemple: `5` pour 1->4 à couvrir, 5->fin atteignables"
+                print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne   
+                print >> sys.stderr, "Cette ligne correspond au num_sommet du premier sommet 'non-atteignable'"
+                print >> sys.stderr, "Tous les num_sommet < ce numéro seront des sommets à couvrir,"
+                print >> sys.stderr, "tous les num_sommet >= ce numéro seront des sommets atteignables"
+                print >> sys.stderr, "Forme: `numero_sommet`"
+                print >> sys.stderr, "Exemple: `5` pour 1->4 à couvrir, 5->fin atteignables"
                 sys.exit(1)
             debut_noeuds_atteignables = ligne_entiers[0]
         elif numero_ligne == 3 and ligne_entiers != None:
             if len(ligne_entiers) != 3:
-                print "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne
-                print "Cette ligne définit la position du dépôt"
-                print "Forme: `0   x   y`"
+                print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne
+                print >> sys.stderr, "Cette ligne définit la position du dépôt"
+                print >> sys.stderr, "Forme: `0   x   y`"
                 sys.exit(1)
             noeud_depot = ligne_entiers
         elif numero_ligne > 3 and ligne_entiers != None:
             if len(ligne_entiers) > 0 and ligne_entiers[0] < debut_noeuds_atteignables:
                 if len(ligne_entiers) != 4:
-                    print "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne           
-                    print "Cette ligne correspond à une définition de noeud à couvrir (non atteignable)"
-                    print "car vous avez défini debut_noeuds_atteignables=%d",debut_noeuds_atteignables
-                    print "Forme: `num_sommet  x   y  qté`"
+                    print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne           
+                    print >> sys.stderr, "Cette ligne correspond à une définition de noeud à couvrir (non atteignable)"
+                    print >> sys.stderr, "car vous avez défini debut_noeuds_atteignables=%d",debut_noeuds_atteignables
+                    print >> sys.stderr, "Forme: `num_sommet  x   y  qté`"
                     sys.exit(1)
                 noeuds_a_couvrir += [ligne_entiers]
             else:
                 if len(ligne_entiers) != 3:
-                    print "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne           
-                    print "Cette ligne correspond à une définition de noeud atteignable (couvrants)"
-                    print "car vous avez défini debut_noeuds_atteignables=%d",debut_noeuds_atteignables
-                    print "Forme: `num_sommet  x   y`"
+                    print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne           
+                    print >> sys.stderr, "Cette ligne correspond à une définition de noeud atteignable (couvrants)"
+                    print >> sys.stderr, "car vous avez défini debut_noeuds_atteignables=%d",debut_noeuds_atteignables
+                    print >> sys.stderr, "Forme: `num_sommet  x   y`"
                     sys.exit(1)
                 noeuds_atteignables += [ligne_entiers]
                 
@@ -143,7 +150,7 @@ def definir_chemins_depuis_resultat_glpsol(nom_fichier):
         ligne_entiers = parser_ligne(ligne)
         if ligne_entiers != None:
             if len(ligne_entiers) < 3:
-                print "definir_chemins_depuis_resultat_glpsol(): erreur ligne %d" % numero_ligne
+                print >> sys.stderr, "definir_chemins_depuis_resultat_glpsol(): erreur ligne %d" % numero_ligne
                 sys.exit(1)
             routes = routes + [ligne_entiers[:3]]
             numero_ligne += 1
@@ -164,7 +171,7 @@ def tracer_dot(rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables,routes):
     # est en unité de points alors que `width=` a pour unité l'inch.
     sommets_vus = []
     noeuds_atteignables_et_depot = [noeud_depot] + noeuds_atteignables
-    couleurs_aretes = ['red','blue','black','brown','darkorchid','forestgreen','cyan4','orange','cadetblue']
+    couleurs_aretes = ['red','blue','black','darkorchid','forestgreen','cyan4','orange','cadetblue']
 
     # Traitement du sommet dépôt
     print('\t%d [xlabel=\"D\" shape=point pos=\"%f,%f!\"]; ' % (noeud_depot[0],noeud_depot[1]*scaling,noeud_depot[2]*scaling))
@@ -174,20 +181,18 @@ def tracer_dot(rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables,routes):
     for chemin in routes:
         sommets = chemin[1:2+1]
         num_route = chemin[0]
-        # Traitement des deux sommets
-        for num_sommet in sommets:
-            if num_sommet not in sommets_vus:
-                [x,y] = next(n[1:2+1] for n in noeuds_atteignables_et_depot if n[0]==num_sommet)
-                sommets_vus = sommets_vus + [num_sommet]
-                print('\t%d [pos="%f,%f!"]; ' % (num_sommet,x*scaling,y*scaling))
-                print('\trayon_%d [pos="%f,%f!" shape=circle fixedsize=true width=%d]; '\
-                        % (num_sommet,x*scaling,y*scaling,rayon*2))
         # Traitement de l'arête
         if sommets[0] != sommets[1] and sommets[1] != noeud_depot[0]:
             print('\t%d -- %d [color=%s]; ' \
                     % (sommets[0],sommets[1],couleurs_aretes[(num_route-1)%len(couleurs_aretes)]))
+    # Traitement des sommets atteignables
+    for [sommet,x,y] in noeuds_atteignables:
+        print('\t%d [pos="%f,%f!"]; ' % (sommet,x*scaling,y*scaling))
+        print('\trayon_%d [pos="%f,%f!" shape=circle fixedsize=true width=%d label=""]; '\
+                        % (sommet,x*scaling,y*scaling,rayon*2))               
 
-
+            
+        
     # Traitement des sommets à couvrir
     for [num_sommet,x,y,qte] in noeuds_a_couvrir:
         print('\t%d [pos="%f,%f!" color="blue"]; ' % (num_sommet,x*scaling,y*scaling))
@@ -221,7 +226,7 @@ def produire_data_solveur(rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables
     print ";"
 
     print "# Rayon de couverture d\'un point atteignable (J)"
-    print "param cmax := %d;" % rayon
+    print "param cmax := %.2f;" % rayon
 
     print "param : d :="
     for [num,x,y,qte] in noeuds_a_couvrir:
