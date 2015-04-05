@@ -6,41 +6,15 @@
 #
 # Distributed under terms of the MIT license.
 
-#
-# txt_vers_gmpl.py
-#
-# Permet de transcrire un fichier avec des noeuds et coordonnées
-# en un fichier avec des (noeud1, noeud2, distance)
-# EXEMPLE. Entrée: (je l'ai appelé "exemple.txt" dans le dossier sur le drive)
-# 1      3      5
-# 2      10      9
-# 3      9      14
-# etc...
-# NOTE: seules les 4 premières données nous importent
-# Ça transforme ça en:
-# graph City
-# {
-# layout = neato;
-# node [shape = circle];
-# edge [dir=forward]
-# rankdir = LR;
-# 1 [pos="0.0,100.0!"];
-# 2 [pos="100.0,200.0!"];
-# 3 [pos="100.0,0.0!"];
-# 4 [pos="200.0,100.0!"];
-#
-# 1 -- 2 [label="s2 - 3", color=red];
-# 1 -- 3 [label="w - 7", color=blue];
-# 1 -- 4 [label="w - 6", color=green];
-# }
-
 
 #
-# Note avec exemple.txt:
-# Les données sont de la forme
-#   id x y quantity tmin tmax duration
-# Avec quantity -> quantité demandée par le client
-# tmin, tmax, duration -> pas besoin
+# Pour lancer glpsol et générer en même temps le .dot :
+#
+# python parseur_noeuds.py --dat noeuds.txt > data.dat && \
+# glpsol -m ctp.mod -d data.dat -y resultats_solveur.txt && \
+# python parseur_noeuds.py --dot noeuds.txt resultats_solveur.txt > graphe.dot
+#
+# Ensuite, ouvrir le .dot avec graphviz
 #
 
 
