@@ -149,54 +149,119 @@ def definir_chemins_depuis_resultat_glpsol(nom_fichier):
             numero_ligne += 1
             ligne = fichier.readline()
     return routes
+    
+def tracer_dot(rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables,routes):
+    print(
+    "graph RoutesCTP \n"\
+    "{ \n"\
+    "\t layout=neato; \n"\
+    "\t node [shape=point]; \n"\
+    "\t edge [dir=none splines=line] \n"\
+    "\t rankdir = LR;")
+
+    scaling = 72 # Pour que les sommets soient suffisemment écartés dans graphviz
+    # 72 correspond au nombre de points (x,y...) pour un 'inch'. En effet, `pos=`
+    # est en unité de points alors que `width=` a pour unité l'inch.
+    sommets_vus = []
+    noeuds_atteignables_et_depot = [noeud_depot] + noeuds_atteignables
+    couleurs_aretes = ['red','blue','black','brown','darkorchid','forestgreen','cyan4','orange','cadetblue']
+
+    # Traitement du sommet dépôt
+    print('\t%d [xlabel=\"D\" shape=point pos=\"%f,%f!\"]; ' % (noeud_depot[0],noeud_depot[1]*scaling,noeud_depot[2]*scaling))
+    sommets_vus = sommets_vus + [noeud_depot[0]]
+
+    # Traitement de chaque arc déterminé par le solveur
+    for chemin in routes:
+        sommets = chemin[1:2+1]
+        num_route = chemin[0]
+        # Traitement des deux sommets
+        for num_sommet in sommets:
+            if num_sommet not in sommets_vus:
+                [x,y] = next(n[1:2+1] for n in noeuds_atteignables_et_depot if n[0]==num_sommet)
+                sommets_vus = sommets_vus + [num_sommet]
+                print('\t%d [pos="%f,%f!"]; ' % (num_sommet,x*scaling,y*scaling))
+                print('\trayon_%d [pos="%f,%f!" shape=circle fixedsize=true width=%d]; '\
+                        % (num_sommet,x*scaling,y*scaling,rayon*2))
+        # Traitement de l'arête
+        if sommets[0] != sommets[1] and sommets[1] != noeud_depot[0]:
+            print('\t%d -- %d [color=%s]; ' \
+                    % (sommets[0],sommets[1],couleurs_aretes[(num_route-1)%len(couleurs_aretes)]))
+
+
+    # Traitement des sommets à couvrir
+    for [num_sommet,x,y,qte] in noeuds_a_couvrir:
+        print('\t%d [pos="%f,%f!" color="blue"]; ' % (num_sommet,x*scaling,y*scaling))
+    print("}")
+
+# Ajoutons artificiellement un n+1ième point qui sera
+# une copie de ce qui a été fait avec 0, le dépôt.
+# C'est pour que le paramètre de durée, c[k,i,j] (dans le CCVRP)
+# ait toutes les valeurs de i et j entre 0 et n+1
+def produire_data_solveur(rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables):
+    print "data;"
+
+    print "# Nombre de sommets à couvrir (I)"
+    print "param n := %d;"% len(noeuds_a_couvrir)
+    print "# Nombre de sommets atteignables (J)"
+    print "param m := %d;"% len(noeuds_atteignables)
+    print "# Nombre de véhicules (L)"
+    print "param l := 10;" # XXX
+
+    print "# Capacité d\'un véhicule"
+    print "param Q := 20;" # XXX
+
+    print "set I := %d..%d;"% (1,len(noeuds_a_couvrir))
+    print "set J := %d..%d;"% (len(noeuds_a_couvrir)+1,\
+            len(noeuds_a_couvrir)+len(noeuds_atteignables))
+
+    print "# Rayon de couverture d\'un point atteignable (J)"
+    print "param cmax := %d;" % rayon
+
+    print "param : d :="
+    for [num,x,y,qte] in noeuds_a_couvrir:
+        print("%d %d" % (num,qte))
+    print(";")
+
+    print("param : E : c := ")
+    for p1 in noeuds_atteignables + noeuds_a_couvrir + [noeud_depot]:
+        for p2 in noeuds_atteignables + noeuds_a_couvrir +  [noeud_depot]:
+            if p1 != p2:
+                dist = math.sqrt(pow(p1[1]-p2[1],2)+pow(p1[2]-p2[2],2))
+                print("%d %d %f" % (p1[0],p2[0],dist))
+    print(";")
+
+    print 'end;'
+
+
+
+import argparse
 
 # Vérification des paramètres
-if len(sys.argv) != 3:
-    print("Usage: %s nom_fichier_noeuds_format_ctp nom_fichier_resultat" % sys.argv[0])
+if len(sys.argv) < 2:
+    print("Usage: %s -dot fichier_noeuds fichier_resultat" % sys.argv[0])
+    print("Usage: %s -dat fichier_noeuds" % sys.argv[0])
     sys.exit(1)
-
-[rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables] =  definir_noeuds_depuis_fichier_noeuds(sys.argv[1])
-routes =  definir_chemins_depuis_resultat_glpsol(sys.argv[2])
-
-print(
-"graph RoutesCTP \n"\
-"{ \n"\
-"\t layout=neato; \n"\
-"\t node [shape=point]; \n"\
-"\t edge [dir=none splines=line] \n"\
-"\t rankdir = LR;")
     
+parser = argparse.ArgumentParser(description='aazdazd')
 
-scaling = 50 # Pour que les sommets soient suffisemment écartés dans graphviz
-sommets_vus = []
-noeuds_atteignables_et_depot = [noeud_depot] + noeuds_atteignables
-couleurs_aretes = ['red','blue','black','brown','darkorchid','forestgreen','cyan4','orange','cadetblue']
+parser.add_argument('--dot', nargs=2, \
+        required=False,\
+        help='Commande permettant de produire un .dot',\
+        metavar=('fichier_noeuds', 'fichier_resultat_solveur')\
+        )
+parser.add_argument('--dat', nargs=1, \
+        required=False,\
+        help='Commande permettant de produire un .dat',\
+        metavar='fichier_noeuds'\
+        )
+args = parser.parse_args()
 
-# Traitement du sommet dépôt
-print("\t%d [xlabel=\"D\" shape=point pos=\"%f,%f!\"]; " % (noeud_depot[0],noeud_depot[1]*scaling,noeud_depot[2]*scaling))
-sommets_vus = sommets_vus + [noeud_depot[0]]
-
-# Traitement de chaque arc déterminé par le solveur
-for chemin in routes:
-    sommets = chemin[1:2+1]
-    num_route = chemin[0]
-    # Traitement des deux sommets
-    for num_sommet in sommets:
-        if num_sommet not in sommets_vus:
-            [x,y] = next(n[1:2+1] for n in noeuds_atteignables_et_depot if n[0]==num_sommet)
-            sommets_vus = sommets_vus + [num_sommet]
-            print("\t%d [pos=\"%f,%f!\"]; " % (num_sommet,x*scaling,y*scaling))
-    # Traitement de l'arête
-    if sommets[0] != sommets[1] and sommets[1] != noeud_depot[0]:
-        print("\t%d -- %d [color=%s]; " \
-                % (sommets[0],sommets[1],couleurs_aretes[(num_route-1)%len(couleurs_aretes)]))
-
-
-# Traitement des sommets à couvrir
-for [num_sommet,x,y,qte] in noeuds_a_couvrir:
-    print('\t%d [pos=\"%f,%f!\" color="blue"]; ' % (num_sommet,x*scaling,y*scaling))
-
+if args.dot != None:
+    [rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables] =  definir_noeuds_depuis_fichier_noeuds(args.dot[0])
+    routes =  definir_chemins_depuis_resultat_glpsol(args.dot[1])
+    tracer_dot(rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables,routes)
     
-print("}")
-
+if args.dat != None:
+    [rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables] =  definir_noeuds_depuis_fichier_noeuds(args.dat[0])
+    produire_data_solveur(rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables)
 
