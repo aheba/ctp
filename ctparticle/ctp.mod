@@ -102,12 +102,12 @@ solve;
 #printf{i in V,j in V : i<>j} "%d %d la distance %d\n",i,j,c[i,j];
 #printf{(i,j) in E} "%d %d, l'arcs\n",i,j; 
 printf "La somme des distances/coûts des tournées est de %d\n", 
-	sum{i in J union Depot, j in J union Depot, k in L} c[i,j] * x[i,j,k];
+	sum{i in J union Depot, j in J union Depot, k in L: i<>j} c[i,j] * x[i,j,k];
 printf "%d camions parmi %d ont été pris \n", 
 	sum{k in L} max{i in J,j in J: i<>j} x[i,j,k],l;
 
 printf 	"Camion  Sommet1   Sommet2   Distance\n";
-printf{k in L, i in J union Depot,j in J union Depot: x[i,j,k]>0}
+printf{k in L, i in J union Depot,j in J union Depot: x[i,j,k]>0 and i<>j}
 		"   %3d      %3d       %3d     %6g\n",
 		k, i, j, c[i,j];
 
