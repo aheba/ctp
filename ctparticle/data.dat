@@ -8,7 +8,7 @@ param m := 2;
 param l := 10;
 
 # Capacité d'un véhicule
-param Q := 2;
+param Q := 20;
 
 # Rayon de couverture d'un point atteignable (J)
 param cmax := 2;
@@ -40,11 +40,6 @@ param : E : c :=
 3 0 3.0
 3 1 2.0
 3 2 1.0
-
-0 0 0.0
-1 1 0.0
-2 2 0.0
-3 3 0.0
 ;
 
 # Distance entre un sommet à couvrir i de I et
