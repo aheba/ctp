@@ -1,0 +1,20 @@
+graph RoutesCTP 
+{ 
+	 layout=neato; 
+	 node [shape=point]; 
+	 edge [dir=none splines=line] 
+	 rankdir = LR;
+	0 [xlabel="D" shape=point pos="150.000000,250.000000!"]; 
+	2 [pos="500.000000,450.000000!"]; 
+	3 [pos="450.000000,700.000000!"]; 
+	3 -- 2 [color=blue]; 
+	0 -- 3 [color=blue]; 
+	3 -- 2 [color=black]; 
+	0 -- 3 [color=black]; 
+	3 -- 2 [color=brown]; 
+	0 -- 3 [color=brown]; 
+	3 -- 2 [color=darkorchid]; 
+	0 -- 3 [color=darkorchid]; 
+	3 -- 2 [color=forestgreen]; 
+	0 -- 3 [color=forestgreen]; 
+}
