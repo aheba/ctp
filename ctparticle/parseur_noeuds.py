@@ -242,13 +242,8 @@ def produire_data_solveur(rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables
 
 import argparse
 
-# Vérification des paramètres
-if len(sys.argv) < 2:
-    print("Usage: %s -dot fichier_noeuds fichier_resultat" % sys.argv[0])
-    print("Usage: %s -dat fichier_noeuds" % sys.argv[0])
-    sys.exit(1)
     
-parser = argparse.ArgumentParser(description='aazdazd')
+parser = argparse.ArgumentParser(description='Parser pour .dat et .dot')
 
 parser.add_argument('--dot', nargs=2, \
         required=False,\
@@ -260,6 +255,7 @@ parser.add_argument('--dat', nargs=1, \
         help='Commande permettant de produire un .dat',\
         metavar='fichier_noeuds'\
         )
+
 args = parser.parse_args()
 
 if args.dot != None:
