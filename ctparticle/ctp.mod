@@ -24,7 +24,7 @@ set L, := 1..l;
 
 ########### Constantes ##########
 # Distance entre deux sommets atteignables (J)
-param c{i in V,j in V}, >= 0;
+param c{i in V,j in V: i<>j}, >= 0;
 
 # Distance entre un sommet à couvrir i de I et
 # un sommet atteignable j de J
@@ -49,7 +49,7 @@ var u{i in J, k in L}, >= 0;
 
 ######## Fonction objectif #########
 minimize somme_couts_deplacement:
-	sum{i in J union Depot, j in J union Depot, k in L} c[i,j] * x[i,j,k];
+	sum{i in J union Depot, j in J union Depot, k in L: i<>j} c[i,j] * x[i,j,k];
 
 ############ Contraintes ##############
 
@@ -84,11 +84,14 @@ s.t. demande_satisfaite{i in I}:
 
 # Contrainte (7)
 s.t. distribution_sommet_atteignable{k in L, j in J}:
-	sum{i in I} D[i,j,k] <=Q * y[j,k];
+	sum{i in I} D[i,j,k] <= Q * y[j,k];
 
 # Contrainte (8)
 s.t. capacite_vehicule{k in L}:
 	sum{i in I, j in J} D[i,j,k]<= Q;
+
+s.t. un_camion_par_noeud_atteignable{j in J}:
+	sum{k in L} y[j,k] <= 1;
 
 # Contrainte (9)
 s.t. sub_tour{i in J, j in J, k in L}:
