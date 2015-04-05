@@ -210,9 +210,15 @@ def produire_data_solveur(rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables
     print "# Capacité d\'un véhicule"
     print "param Q := 20;" # XXX
 
-    print "set I := %d..%d;"% (1,len(noeuds_a_couvrir))
-    print "set J := %d..%d;"% (len(noeuds_a_couvrir)+1,\
-            len(noeuds_a_couvrir)+len(noeuds_atteignables))
+    print "set I :="
+    for [num,x,y,_] in noeuds_a_couvrir:
+        print "%d" % num
+    print ";"
+    
+    print "set J :="
+    for [num,x,y] in noeuds_atteignables:
+        print "%d" % num
+    print ";"
 
     print "# Rayon de couverture d\'un point atteignable (J)"
     print "param cmax := %d;" % rayon
@@ -223,11 +229,11 @@ def produire_data_solveur(rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables
     print(";")
 
     print("param : E : c := ")
-    for p1 in noeuds_atteignables + noeuds_a_couvrir + [noeud_depot]:
-        for p2 in noeuds_atteignables + noeuds_a_couvrir +  [noeud_depot]:
+    for p1 in  noeuds_a_couvrir + noeuds_atteignables + [noeud_depot]:
+        for p2 in  noeuds_a_couvrir + noeuds_atteignables + [noeud_depot]:
             if p1 != p2:
                 dist = math.sqrt(pow(p1[1]-p2[1],2)+pow(p1[2]-p2[2],2))
-                print("%d %d %f" % (p1[0],p2[0],dist))
+                print("%d %d %.2f" % (p1[0],p2[0],dist))
     print(";")
 
     print 'end;'
