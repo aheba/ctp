@@ -166,7 +166,7 @@ def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_a
     couleurs_aretes = ['red','blue','black','darkorchid','forestgreen','cyan4','orange','cadetblue']
 
     # Traitement du sommet dépôt
-    print('\t%d [xlabel=\"D\" shape=point pos=\"%f,%f!\"]; ' % (noeud_depot[0],noeud_depot[1]*scaling,noeud_depot[2]*scaling))
+    print('\t%d [label="" xlabel="Dépôt" shape=square fixedsize=true style=filled width=0.1 color=black pos=\"%f,%f!\"]; ' % (noeud_depot[0],noeud_depot[1]*scaling,noeud_depot[2]*scaling))
     sommets_vus = sommets_vus + [noeud_depot[0]]
 
     # Traitement de chaque arc déterminé par le solveur
@@ -187,7 +187,7 @@ def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_a
         
     # Traitement des sommets à couvrir
     for [num_sommet,x,y,qte] in noeuds_a_couvrir:
-        print('\t%d [pos="%f,%f!" color="blue"]; ' % (num_sommet,x*scaling,y*scaling))
+        print('\t%d [label="" pos="%f,%f!" color="blue" style=filled shape=triangle fixedsize=true width=0.1 height=0.2]; ' % (num_sommet,x*scaling,y*scaling))
     print("}")
 
 # Ajoutons artificiellement un n+1ième point qui sera
