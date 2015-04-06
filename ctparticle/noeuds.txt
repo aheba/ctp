@@ -3,14 +3,14 @@
 2 	# Rayon de couverture des sommets atteignables
 9 	# Numéro noeud à partir duquel on commence les noeuds atteignables
 0	3	5    	# c'est le dépôt
-1	4	6	1	# Début des noeuds à couvrir
+1	4	5	1	# Début des noeuds à couvrir
 2	5	1	1
 3	6	4	1
 4	0	2	1
 5	3	0	1
 6	4	3	1
 7	2	1	1
-8	4	1	1
+8	4	2	1
 9	5	3		# Début des noeuds atteignables
 10	3	4
 11	2	2
