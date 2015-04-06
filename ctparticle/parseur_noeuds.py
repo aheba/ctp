@@ -149,7 +149,7 @@ def definir_chemins_depuis_resultat_glpsol(nom_fichier):
             ligne = fichier.readline()
     return routes
     
-def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_atteignables,routes):
+def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_atteignables,routes,avec_numeros):
     print(
     "graph RoutesCTP \n"\
     "{ \n"\
@@ -179,15 +179,15 @@ def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_a
                     % (sommets[0],sommets[1],couleurs_aretes[(num_route-1)%len(couleurs_aretes)]))
     # Traitement des sommets atteignables
     for [sommet,x,y] in noeuds_atteignables:
-        print('\t%d [pos="%f,%f!"]; ' % (sommet,x*scaling,y*scaling))
+        print('\t%d [xlabel="%s" pos="%f,%f!"]; ' \
+                % (sommet,sommet if avec_numeros else "", x*scaling,y*scaling))
         print('\trayon_%d [pos="%f,%f!" shape=circle fixedsize=true width=%d label=""]; '\
-                        % (sommet,x*scaling,y*scaling,rayon*2))               
+                % (sommet,x*scaling,y*scaling,rayon*2))
 
-            
-        
     # Traitement des sommets à couvrir
-    for [num_sommet,x,y,qte] in noeuds_a_couvrir:
-        print('\t%d [label="" pos="%f,%f!" color="blue" style=filled shape=triangle fixedsize=true width=0.1 height=0.2]; ' % (num_sommet,x*scaling,y*scaling))
+    for [sommet,x,y,qte] in noeuds_a_couvrir:
+        print('\t%d [xlabel="%s" label="" pos="%f,%f!" color="blue" style=filled shape=triangle fixedsize=true width=0.1 height=0.2]; ' \
+                % (sommet,sommet if avec_numeros else "",x*scaling,y*scaling))
     print("}")
 
 # Ajoutons artificiellement un n+1ième point qui sera
@@ -252,6 +252,7 @@ parser.add_argument('--dat', nargs=1, \
         help='Commande permettant de produire un .dat',\
         metavar='fichier_noeuds'\
         )
+parser.add_argument('--numeros', action="store_true")
 
 args = parser.parse_args()
 
@@ -259,10 +260,12 @@ if args.dot != None:
     [rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_atteignables] =\
             definir_noeuds_depuis_fichier_noeuds(args.dot[0])
     routes =  definir_chemins_depuis_resultat_glpsol(args.dot[1])
-    tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_atteignables,routes)
+    tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,\
+            noeuds_atteignables,routes,args.numeros != None)
     
 if args.dat != None:
     [rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_atteignables] = \
             definir_noeuds_depuis_fichier_noeuds(args.dat[0])
-    produire_data_solveur(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_atteignables)
+    produire_data_solveur(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,\
+            noeuds_atteignables)
 
