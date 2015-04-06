@@ -94,7 +94,7 @@ def definir_noeuds_depuis_fichier_noeuds(nom_fichier):
                 if len(ligne_entiers) != 4:
                     print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne           
                     print >> sys.stderr, "Cette ligne correspond à une définition de noeud à couvrir (non atteignable)"
-                    print >> sys.stderr, "car vous avez défini debut_noeuds_atteignables=%d",debut_noeuds_atteignables
+                    print >> sys.stderr, "car vous avez défini debut_noeuds_atteignables=%d"%debut_noeuds_atteignables
                     print >> sys.stderr, "Forme: `num_sommet  x   y  qté`"
                     sys.exit(1)
                 noeuds_a_couvrir += [ligne_entiers]
@@ -102,7 +102,7 @@ def definir_noeuds_depuis_fichier_noeuds(nom_fichier):
                 if len(ligne_entiers) != 3:
                     print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne           
                     print >> sys.stderr, "Cette ligne correspond à une définition de noeud atteignable (couvrants)"
-                    print >> sys.stderr, "car vous avez défini debut_noeuds_atteignables=%d",debut_noeuds_atteignables
+                    print >> sys.stderr, "car vous avez défini debut_noeuds_atteignables=%d"%debut_noeuds_atteignables
                     print >> sys.stderr, "Forme: `num_sommet  x   y`"
                     sys.exit(1)
                 noeuds_atteignables += [ligne_entiers]
