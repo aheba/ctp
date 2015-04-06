@@ -12,7 +12,9 @@
 #
 # python parseur_noeuds.py --dat noeuds.txt > data.dat && \
 # glpsol -m ctp.mod -d data.dat -y resultats_solveur.txt && \
-# python parseur_noeuds.py --dot noeuds.txt resultats_solveur.txt > graphe.dot
+# python parseur_noeuds.py --numeros --dot noeuds.txt resultats_solveur.txt > graphe.dot
+# 
+# 
 #
 # Ensuite, ouvrir le .dot avec graphviz
 #
@@ -149,26 +151,29 @@ def definir_chemins_depuis_resultat_glpsol(nom_fichier):
             ligne = fichier.readline()
     return routes
     
-def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_atteignables,routes,avec_numeros):
+def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_atteignables,routes,\
+        avec_numeros,avec_demande):
     print(
-    "graph RoutesCTP \n"\
-    "{ \n"\
-    "\t layout=neato; \n"\
-    "\t node [shape=point]; \n"\
-    "\t edge [dir=none splines=line] \n"\
-    "\t rankdir = LR;")
+    'graph RoutesCTP \n'\
+    '{ \n'\
+    '\t layout=neato; \n'\
+    '\t node [shape=point label=""]; \n'\
+    '\t edge [dir=none splines=line] \n'\
+    '\t rankdir = LR;')
 
     scaling = 72 # Pour que les sommets soient suffisemment écartés dans graphviz
     # 72 correspond au nombre de points (x,y...) pour un 'inch'. En effet, `pos=`
     # est en unité de points alors que `width=` a pour unité l'inch.
     sommets_vus = []
     noeuds_atteignables_et_depot = [noeud_depot] + noeuds_atteignables
-    couleurs_aretes = ['red','blue','black','darkorchid','forestgreen','cyan4','orange','cadetblue']
+    couleurs_aretes = ['red','darkorchid','forestgreen','cyan4','orange','cadetblue']
 
     # Traitement du sommet dépôt
-    print('\t%d [label="" xlabel="Dépôt" shape=square fixedsize=true style=filled width=0.1 color=black pos=\"%f,%f!\"]; ' % (noeud_depot[0],noeud_depot[1]*scaling,noeud_depot[2]*scaling))
+    print('\t%d [label="" xlabel="Dépôt" shape=square fixedsize=true\
+            style=filled width=0.1 color=black pos="%f,%f!"]; ' \
+            % (noeud_depot[0],noeud_depot[1]*scaling,noeud_depot[2]*scaling))
     sommets_vus = sommets_vus + [noeud_depot[0]]
-
+    print avec_numeros
     # Traitement de chaque arc déterminé par le solveur
     for chemin in routes:
         sommets = chemin[1:2+1]
@@ -179,15 +184,18 @@ def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_a
                     % (sommets[0],sommets[1],couleurs_aretes[(num_route-1)%len(couleurs_aretes)]))
     # Traitement des sommets atteignables
     for [sommet,x,y] in noeuds_atteignables:
-        print('\t%d [xlabel="%s" pos="%f,%f!"]; ' \
-                % (sommet,sommet if avec_numeros else "", x*scaling,y*scaling))
+        print('\t%d [xlabel="%s" pos="%f,%f!" label=""]; ' \
+                % (sommet,str(sommet) if avec_numeros else "", x*scaling,y*scaling))
         print('\trayon_%d [pos="%f,%f!" shape=circle fixedsize=true width=%d label=""]; '\
                 % (sommet,x*scaling,y*scaling,rayon*2))
 
     # Traitement des sommets à couvrir
     for [sommet,x,y,qte] in noeuds_a_couvrir:
-        print('\t%d [xlabel="%s" label="" pos="%f,%f!" color="blue" style=filled shape=triangle fixedsize=true width=0.1 height=0.2]; ' \
-                % (sommet,sommet if avec_numeros else "",x*scaling,y*scaling))
+        xlabel=""
+        xlabel+=("<font color=\'blue\'>"+"("+str(qte)+")" +"</font>") if avec_demande else ""
+        xlabel+=("<font color=\'black\'>"+str(sommet)+"</font>") if avec_numeros else ""
+        print '\t%d [label="" xlabel=<%s> pos="%f,%f!" color="blue" style=filled shape=triangle fixedsize=true width=0.1 height=0.2]; ' \
+               % (sommet, xlabel, x*scaling,y*scaling)
     print("}")
 
 # Ajoutons artificiellement un n+1ième point qui sera
@@ -241,18 +249,21 @@ import argparse
 
     
 parser = argparse.ArgumentParser(description='Parser pour .dat et .dot')
-
-parser.add_argument('--dot', nargs=2, \
+exclusive = parser.add_mutually_exclusive_group(required=True)
+exclusive.add_argument('--dot', nargs=2, \
         required=False,\
         help='Commande permettant de produire un .dot',\
         metavar=('fichier_noeuds', 'fichier_resultat_solveur')\
         )
-parser.add_argument('--dat', nargs=1, \
+exclusive.add_argument('--dat', nargs=1, \
         required=False,\
         help='Commande permettant de produire un .dat',\
         metavar='fichier_noeuds'\
         )
-parser.add_argument('--numeros', action="store_true")
+parser.add_argument('--numeros',action='store_true',\
+        help="Pour la commande --dot, afficher les numéros des noeuds")
+parser.add_argument('--demandes',action='store_true',\
+        help="Pour la commande --dot, afficher les demandes des noeuds à couvrir")
 
 args = parser.parse_args()
 
@@ -261,7 +272,7 @@ if args.dot != None:
             definir_noeuds_depuis_fichier_noeuds(args.dot[0])
     routes =  definir_chemins_depuis_resultat_glpsol(args.dot[1])
     tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,\
-            noeuds_atteignables,routes,args.numeros != None)
+            noeuds_atteignables,routes,args.numeros,args.demandes)
     
 if args.dat != None:
     [rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_atteignables] = \
