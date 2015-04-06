@@ -44,13 +44,13 @@ def parser_ligne(ligne):
 
 # Fonction de parsing du fichier de définition des noeuds au format CTP/CTP+CCVRP
 #       - ligne 1: le dépôt (3 entiers)
-#       forme:    `num_sommet   x   y`
+#       Format:    `num_sommet   x   y`
 #       exemple:  `0   4   5`
 #       - ligne 2: ensemble des noeuds atteignables et non atteignables
-#       forme: `num_sommet_début_atteignable`
+#       Format: `num_sommet_début_atteignable`
 #       exemple:  `5` pour 1->4 à couvrir, 5->fin atteignables
 #       - lignes >2: la définition de tous les noeuds
-#       forme:    `num_sommet  x   y  qté`
+#       Format:    `num_sommet  x   y  qté`
 #       exemple:  `45  5   9   40`
 def definir_noeuds_depuis_fichier_noeuds(nom_fichier):
     fichier = open(nom_fichier, 'r')
@@ -62,40 +62,58 @@ def definir_noeuds_depuis_fichier_noeuds(nom_fichier):
     noeuds_atteignables = []
     noeuds_a_couvrir = []
     rayon_couverture = 0
+    nb_vehicules = 0
+    capacite = 0
+
     
     while ligne != "":
         ligne_entiers = parser_ligne(ligne)     
+
         if numero_ligne == 1 and ligne_entiers != None:
             if len(ligne_entiers) != 1:
                 print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne
+                print >> sys.stderr, "Cette ligne définit la capacité des camions"
+                print >> sys.stderr, "Format: `capacité`"
+                sys.exit(1)
+            capacite = ligne_entiers[0]
+        elif numero_ligne == 2 and ligne_entiers != None:
+            if len(ligne_entiers) != 1:
+                print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne   
+                print >> sys.stderr, "Cette ligne correspond au nombre de véhicules/camions"
+                print >> sys.stderr, "Format: `nombre_vehicules`"
+                sys.exit(1)
+            nb_vehicules = ligne_entiers[0]
+        elif numero_ligne == 3 and ligne_entiers != None:
+            if len(ligne_entiers) != 1:
+                print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne
                 print >> sys.stderr, "Cette ligne définit le rayon de couverture des noeuds atteignables"
-                print >> sys.stderr, "Forme: `valeur_rayon`"
+                print >> sys.stderr, "Format: `valeur_rayon`"
                 sys.exit(1)
             rayon_couverture = ligne_entiers[0]
-        elif numero_ligne == 2 and ligne_entiers != None:
+        elif numero_ligne == 4 and ligne_entiers != None:
             if len(ligne_entiers) != 1:
                 print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne   
                 print >> sys.stderr, "Cette ligne correspond au num_sommet du premier sommet 'non-atteignable'"
                 print >> sys.stderr, "Tous les num_sommet < ce numéro seront des sommets à couvrir,"
                 print >> sys.stderr, "tous les num_sommet >= ce numéro seront des sommets atteignables"
-                print >> sys.stderr, "Forme: `numero_sommet`"
+                print >> sys.stderr, "Format: `numero_sommet`"
                 print >> sys.stderr, "Exemple: `5` pour 1->4 à couvrir, 5->fin atteignables"
                 sys.exit(1)
             debut_noeuds_atteignables = ligne_entiers[0]
-        elif numero_ligne == 3 and ligne_entiers != None:
+        elif numero_ligne == 5 and ligne_entiers != None:
             if len(ligne_entiers) != 3:
                 print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne
                 print >> sys.stderr, "Cette ligne définit la position du dépôt"
-                print >> sys.stderr, "Forme: `0   x   y`"
+                print >> sys.stderr, "Format: `0   x   y`"
                 sys.exit(1)
             noeud_depot = ligne_entiers
-        elif numero_ligne > 3 and ligne_entiers != None:
+        elif numero_ligne > 5 and ligne_entiers != None:
             if len(ligne_entiers) > 0 and ligne_entiers[0] < debut_noeuds_atteignables:
                 if len(ligne_entiers) != 4:
                     print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne           
                     print >> sys.stderr, "Cette ligne correspond à une définition de noeud à couvrir (non atteignable)"
                     print >> sys.stderr, "car vous avez défini debut_noeuds_atteignables=%d"%debut_noeuds_atteignables
-                    print >> sys.stderr, "Forme: `num_sommet  x   y  qté`"
+                    print >> sys.stderr, "Format: `num_sommet  x   y  qté`"
                     sys.exit(1)
                 noeuds_a_couvrir += [ligne_entiers]
             else:
@@ -103,13 +121,13 @@ def definir_noeuds_depuis_fichier_noeuds(nom_fichier):
                     print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne           
                     print >> sys.stderr, "Cette ligne correspond à une définition de noeud atteignable (couvrants)"
                     print >> sys.stderr, "car vous avez défini debut_noeuds_atteignables=%d"%debut_noeuds_atteignables
-                    print >> sys.stderr, "Forme: `num_sommet  x   y`"
+                    print >> sys.stderr, "Format: `num_sommet  x   y`"
                     sys.exit(1)
                 noeuds_atteignables += [ligne_entiers]
                 
         numero_ligne += 1
         ligne = fichier.readline()        
-    return [rayon_couverture, noeud_depot, noeuds_a_couvrir, noeuds_atteignables]
+    return [rayon_couverture, nb_vehicules, capacite, noeud_depot, noeuds_a_couvrir, noeuds_atteignables]
 
 #   Depuis les résultats du ctp :
 #       `id_route id1  id2 [...]`
@@ -131,7 +149,7 @@ def definir_chemins_depuis_resultat_glpsol(nom_fichier):
             ligne = fichier.readline()
     return routes
     
-def tracer_dot(rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables,routes):
+def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_atteignables,routes):
     print(
     "graph RoutesCTP \n"\
     "{ \n"\
@@ -176,7 +194,7 @@ def tracer_dot(rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables,routes):
 # une copie de ce qui a été fait avec 0, le dépôt.
 # C'est pour que le paramètre de durée, c[k,i,j] (dans le CCVRP)
 # ait toutes les valeurs de i et j entre 0 et n+1
-def produire_data_solveur(rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables):
+def produire_data_solveur(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_atteignables):
     print "data;"
 
     print "# Nombre de sommets à couvrir (I)"
@@ -184,10 +202,10 @@ def produire_data_solveur(rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables
     print "# Nombre de sommets atteignables (J)"
     print "param m := %d;"% len(noeuds_atteignables)
     print "# Nombre de véhicules (L)"
-    print "param l := 10;" # XXX
+    print "param l := %d;"% nb_vehicules
 
     print "# Capacité d\'un véhicule"
-    print "param Q := 20;" # XXX
+    print "param Q := %d;"% capacite
 
     print "set I :="
     for [num,x,y,_] in noeuds_a_couvrir:
@@ -238,11 +256,13 @@ parser.add_argument('--dat', nargs=1, \
 args = parser.parse_args()
 
 if args.dot != None:
-    [rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables] =  definir_noeuds_depuis_fichier_noeuds(args.dot[0])
+    [rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_atteignables] =\
+            definir_noeuds_depuis_fichier_noeuds(args.dot[0])
     routes =  definir_chemins_depuis_resultat_glpsol(args.dot[1])
-    tracer_dot(rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables,routes)
+    tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_atteignables,routes)
     
 if args.dat != None:
-    [rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables] =  definir_noeuds_depuis_fichier_noeuds(args.dat[0])
-    produire_data_solveur(rayon,noeud_depot,noeuds_a_couvrir,noeuds_atteignables)
+    [rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_atteignables] = \
+            definir_noeuds_depuis_fichier_noeuds(args.dat[0])
+    produire_data_solveur(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_atteignables)
 
