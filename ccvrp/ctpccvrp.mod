@@ -49,8 +49,7 @@ var u{i in J union Depot, k in L}, >= 0;
 
 ######## Fonction objectif #########
 minimize somme_couts_deplacement:
-	#sum{i in J, k in L} u[i,k];
-	sum{i in J, k in L} u[i,k];
+	sum{j in J, k in L: j not in Depot} u[j,k];
 ############ Contraintes ##############
 
 # Contrainte(2) et (3)
@@ -106,15 +105,15 @@ display sub_tour;
 #printf{i in I,j in J} "%d %d les delta %d\n",i,j,delta[i,j];
 #printf{i in V,j in V : i<>j} "%d %d la distance %d\n",i,j,c[i,j];
 #printf{(i,j) in E} "%d %d, l'arcs\n",i,j; 
-printf "La somme des distances/coûts des tournées est de %d\n", 
+printf "# La somme des distances/coûts des tournées est de %d\n", 
 	#sum{i in J, k in L,j in J: i<>j} c[i,j]*y[i,k]*x[i,j,k];
 	sum{i in J, k in L,j in J} u[i,k];
 #printf "%d camions parmi %d ont été pris \n", 
 #	sum{k in L} max{i in J,j in J} x[i,j,k],l;
 
-printf 	"Camion  SommetA   SommetB   Distance\n";
+printf 	"# Camion  SommetA   SommetB   Distance\n";
 printf{k in L, i in J union Depot,j in J union Depot: x[i,j,k]>0 and i<>j}
-		"   %3d      %3d       %3d     %6g\n",
+		"    %3d      %3d       %3d     %6g\n",
 		k, i, j, c[i,j];
 
 
