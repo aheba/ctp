@@ -107,8 +107,8 @@ solve;
 #	sum{k in L} max{i in J,j in J: i<>j} x[i,j,k],l;
 
 #printf 	"Camion  SommetA   SommetB   Distance\n";
-printf{k in L, i in J union Depot,j in J union Depot: x[i,j,k]>0 and i<>j}
-		"   %3d      %3d       %3d     %6g\n",
-		k, i, j, c[i,j];
+printf{k in L, i in J union Depot,j in J union Depot: x[i,j,k]>0}
+		"   %3d      %3d       %3d\n",
+		k, i, j;
 
 end;

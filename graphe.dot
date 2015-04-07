@@ -1,0 +1,29 @@
+graph RoutesCTP 
+{ 
+	 layout=neato; 
+	 node [shape=point label=""]; 
+	 edge [dir=none splines=line] 
+	 rankdir = LR;
+	0 [label="" xlabel="Dépôt" shape=square fixedsize=true            style=filled width=0.1 color=black pos="216.000000,360.000000!"]; 
+True
+	0 -- 50 [color=red]; 
+	52 -- 53 [color=forestgreen]; 
+	53 -- 51 [color=forestgreen]; 
+	0 -- 52 [color=forestgreen]; 
+	50 [xlabel="50" pos="360.000000,216.000000!" label=""]; 
+	rayon_50 [pos="360.000000,216.000000!" shape=circle fixedsize=true width=4 label=""]; 
+	51 [xlabel="51" pos="216.000000,288.000000!" label=""]; 
+	rayon_51 [pos="216.000000,288.000000!" shape=circle fixedsize=true width=4 label=""]; 
+	52 [xlabel="52" pos="0.000000,144.000000!" label=""]; 
+	rayon_52 [pos="0.000000,144.000000!" shape=circle fixedsize=true width=4 label=""]; 
+	53 [xlabel="53" pos="216.000000,72.000000!" label=""]; 
+	rayon_53 [pos="216.000000,72.000000!" shape=circle fixedsize=true width=4 label=""]; 
+	1 [label="" xlabel=<<font color='blue'>(1)</font><font color='black'>1</font>> pos="288.000000,360.000000!" color="blue" style=filled shape=triangle fixedsize=true width=0.1 height=0.2]; 
+	2 [label="" xlabel=<<font color='blue'>(1)</font><font color='black'>2</font>> pos="360.000000,72.000000!" color="blue" style=filled shape=triangle fixedsize=true width=0.1 height=0.2]; 
+	3 [label="" xlabel=<<font color='blue'>(1)</font><font color='black'>3</font>> pos="432.000000,216.000000!" color="blue" style=filled shape=triangle fixedsize=true width=0.1 height=0.2]; 
+	4 [label="" xlabel=<<font color='blue'>(1)</font><font color='black'>4</font>> pos="0.000000,144.000000!" color="blue" style=filled shape=triangle fixedsize=true width=0.1 height=0.2]; 
+	5 [label="" xlabel=<<font color='blue'>(1)</font><font color='black'>5</font>> pos="216.000000,0.000000!" color="blue" style=filled shape=triangle fixedsize=true width=0.1 height=0.2]; 
+	6 [label="" xlabel=<<font color='blue'>(1)</font><font color='black'>6</font>> pos="288.000000,216.000000!" color="blue" style=filled shape=triangle fixedsize=true width=0.1 height=0.2]; 
+	7 [label="" xlabel=<<font color='blue'>(1)</font><font color='black'>7</font>> pos="129.600000,144.000000!" color="blue" style=filled shape=triangle fixedsize=true width=0.1 height=0.2]; 
+	8 [label="" xlabel=<<font color='blue'>(1)</font><font color='black'>8</font>> pos="288.000000,144.000000!" color="blue" style=filled shape=triangle fixedsize=true width=0.1 height=0.2]; 
+}
