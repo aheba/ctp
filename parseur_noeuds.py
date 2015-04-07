@@ -166,7 +166,7 @@ def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_a
     scaling = 72 # Pour que les sommets soient suffisemment écartés dans graphviz
     # 72 correspond au nombre de points (x,y...) pour un 'inch'. En effet, `pos=`
     # est en unité de points alors que `width=` a pour unité l'inch.
-    sommets_vus = []
+    sommets_atteignables_vus = []
     noeuds_atteignables_et_depot = [noeud_depot] + noeuds_atteignables
     couleurs_aretes = ['red','darkorchid','forestgreen','cyan4','orange','cadetblue']
 
@@ -174,21 +174,29 @@ def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_a
     print('\t%d [label="" xlabel="Dépôt" shape=square fixedsize=true\
             style=filled width=0.1 color=black pos="%f,%f!"]; ' \
             % (noeud_depot[0],noeud_depot[1]*scaling,noeud_depot[2]*scaling))
-    sommets_vus = sommets_vus + [noeud_depot[0]]
     # Traitement de chaque arc déterminé par le solveur
     for chemin in routes:
         sommets = chemin[1:2+1]
         num_route = chemin[0]
         # Traitement de l'arête
+        if sommets[0] not in sommets_atteignables_vus:
+            sommets_atteignables_vus += [sommets[0]]
+        if sommets[1] not in sommets_atteignables_vus:
+            sommets_atteignables_vus += [sommets[1]]
         if sommets[0] != sommets[1] and sommets[1] != noeud_depot_arr[0]:
             print('\t%d -- %d [color=%s]; ' \
                     % (sommets[0],sommets[1],couleurs_aretes[(num_route-1)%len(couleurs_aretes)]))
     # Traitement des sommets atteignables
     for [sommet,x,y] in noeuds_atteignables:
-        print('\t%d [xlabel="%s" pos="%f,%f!" label="" shape=point]; ' \
+        if sommet in sommets_atteignables_vus:
+            print('\t%d [xlabel="%s" pos="%f,%f!" label="" shape=circle color=black style=filled width=0.1]; ' \
                 % (sommet,str(sommet) if avec_numeros else "", x*scaling,y*scaling))
-        print('\trayon_%d [pos="%f,%f!" shape=circle fixedsize=true width=%d label=""]; '\
-                % (sommet,x*scaling,y*scaling,rayon*2))
+            print('\trayon_%d [pos="%f,%f!" shape=circle fixedsize=true width=%d label=""]; '\
+                    % (sommet,x*scaling,y*scaling,rayon*2))
+        else:
+            print('\t%d [xlabel="%s" pos="%f,%f!" label="" shape=circle color=gray50 style=filled width=0.1]; ' \
+                % (sommet,str(sommet) if avec_numeros else "", x*scaling,y*scaling))
+
 
     # Traitement des sommets à couvrir
     for [sommet,x,y,qte] in noeuds_a_couvrir:
