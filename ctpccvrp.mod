@@ -25,7 +25,6 @@ check 0 not in I;
 set Depart, := {0};
 set Arrivee, := {max{j in J} j + 1};
 set Depot, := Depart union Arrivee;
-set Interdit, := {(0,n+1), (n+1,0)};
 
 # Ensemble global des sommets
 set V, := Depot union I union J;
@@ -58,7 +57,6 @@ var u{j in J union Depot, k in L}, >= 0;
 
 ######## Fonction objectif #########
 minimize somme_temps_arrivee:
-#	sum{i in J union Depot, j in J union Depot, k in L: i<>j} c[i,j] * x[i,j,k];
 	sum{j in J, k in L} u[j,k];
 
 ############ Contraintes ##############
@@ -104,11 +102,11 @@ s.t. sub_tour{i in J union Depart, j in J union Arrivee, k in L: i<>j}:
 	u[i,k] + c[i,j] - (1-x[i,j,k])*1000 <= u[j,k];	
 solve;
 
-#printf{i in I,j in J} "# %d %d les delta %d\n",i,j,delta[i,j];
-#printf{i in V,j in V : i<>j} "# %d %d la distance %d\n",i,j,c[i,j];
-#printf{(i,j) in E} "# %d %d, l'arcs\n",i,j; 
 printf "# La somme des distances/coûts des tournées est de %d\n", 
 	sum{i in J union Depart, j in J union Arrivee, k in L: i<>j} c[i,j] * x[i,j,k];
+printf "# La somme des temps d'arrivée chez les noeuds à couvrir est de %d\n",
+	sum{j in J, k in L} u[j,k];
+
 printf "# %d camions parmi %d ont été pris \n", 
 	sum{k in L} max{i in J,j in J: i<>j} x[i,j,k],l;
 
