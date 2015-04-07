@@ -118,12 +118,12 @@ s.t. temps_voyage_entre_noeuds{j in V diff Depart, k in R, i in (V diff Arrivee)
 # les "param t" et "param q" définis plus haut
 
 solve;
-display conservation_flot;
-display une_route_part_de_chaque_noeud;
-display capacite_max_vehicule;
-display route_commence_depot;
-display route_termine_depot;
-
+#display conservation_flot;
+#display une_route_part_de_chaque_noeud;
+#display capacite_max_vehicule;
+#display route_commence_depot;
+#display route_termine_depot;
+display temps_voyage_entre_noeuds;
 
 printf "La somme des temps d'arrivée de %d\n", 
 	sum{k in R, i in Vprim} t[k,i];
@@ -149,7 +149,7 @@ param n := 4; # Le dépôt n'est pas compté dans n
 # Le dépôt est situé en 0 et en n+1
 
 param M := 1000;
-param Q := 200;
+param Q := 50;
 
 # Les noeuds 0 et n+1 sont factices (dépot)
 
@@ -177,7 +177,10 @@ param : E : c :=
 4 1 4.472136
 4 2 8.062258
 4 3 8.062258
-4 5 5.099020;
+4 5 5.099020
+
+
+;
 # Définition des demandes de chaque noeud
 # q = quantité demandée par le noeud
 param : DemandesNoeuds : q :=
