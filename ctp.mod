@@ -17,7 +17,7 @@ set Depot, := {0};
 
 set V, := Depot union I union J;
 # Ensemble des arcs entre les sommets atteignables (J)
-set E, within {i in V, j in V: i<>j} /*union {i in V diff Depot,0}*/;
+set E, within {i in V, j in V: i<>j};
 
 # Ensemble des véhicules disponibles
 set L, := 1..l;
@@ -90,25 +90,22 @@ s.t. distribution_sommet_atteignable{k in L, j in J}:
 s.t. capacite_vehicule{k in L}:
 	sum{i in I, j in J} D[i,j,k]<= Q;
 
-s.t. un_camion_par_noeud_atteignable{j in J}:
-	sum{k in L} y[j,k] <= 1;
+#s.t. un_camion_par_noeud_atteignable{j in J}:
+#	sum{k in L} y[j,k] <= 1;
 
 # Contrainte (9)
 s.t. sub_tour{i in J, j in J, k in L}:
 	u[i,k] - u[j,k] + (m+1)*x[i,j,k] <= m;
 solve;
 
-#printf{i in I,j in J} "%d %d les delta %d\n",i,j,delta[i,j];
-#printf{i in V,j in V : i<>j} "%d %d la distance %d\n",i,j,c[i,j];
-#printf{(i,j) in E} "%d %d, l'arcs\n",i,j; 
-#printf "La somme des distances/coûts des tournées est de %d\n", 
-#	sum{i in J union Depot, j in J union Depot, k in L: i<>j} c[i,j] * x[i,j,k];
-#printf "%d camions parmi %d ont été pris \n", 
-#	sum{k in L} max{i in J,j in J: i<>j} x[i,j,k],l;
+printf "# La somme des distances/coûts des tournées est de %d\n", 
+	sum{i in J union Depot, j in J union Depot, k in L: i<>j} c[i,j] * x[i,j,k];
+printf "# %d camions parmi %d ont été pris \n", 
+	sum{k in L} max{i in J,j in J: i<>j} x[i,j,k],l;
 
-#printf 	"Camion  SommetA   SommetB   Distance\n";
+printf 	"# Camion  SommetA   SommetB   Distance\n";
 printf{k in L, i in J union Depot,j in J union Depot: x[i,j,k]>0}
-		"   %3d      %3d       %3d\n",
+		"     %3d      %3d       %3d\n",
 		k, i, j;
 
 end;
