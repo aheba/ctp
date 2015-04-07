@@ -93,8 +93,14 @@ s.t. capacite_vehicule{k in L}:
 	sum{i in I, j in J} D[i,j,k]<= Q;
 
 # Contrainte ajoutée
-s.t. un_camion_par_noeud_atteignable{j in J}:
-	sum{k in L} y[j,k] <= 1;
+# Empêche la mutualisation de distribution depuis un noeud j
+# c'est à dire que deux camions ne pourront pas livrer un i
+# depuis le même noeud j (mais la multi-distribution est possible).
+# NOTE: la multi-distribution marche toujours, c'est à dire
+# qu'il est possible qu'un i soit livré depuis deux j différents
+# et que ces deux j amène une partie de la quantité chacun
+#s.t. un_camion_par_noeud_atteignable{j in J}:
+#	sum{k in L} y[j,k] <= 1;
 
 # Contrainte (9)
 s.t. sub_tour{i in J union Depart, j in J union Arrivee, k in L: i<>j}:
