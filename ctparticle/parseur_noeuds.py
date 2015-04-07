@@ -37,12 +37,15 @@ def float_or_int(value):
 # NOTE: ne prend que les nombre_infos premiers éléments entiers
 # NOTE: si aucun élément, renvoit None
 def parser_ligne(ligne):
-    element_string = [i for i in re.findall("\d+[.\d+]*", ligne) if i]
+    element_string = [i for i in re.findall("(\d+[.\d+]*|#)", ligne) if i]
     # \D -> le délimiteur est "tout" sauf les entiers
-    if len(element_string) >= 1:
-        return [float_or_int(element) for element in element_string]
-    else:
-        return None
+    elements_entiers = []
+    for element in element_string:
+        if element is "#":
+            return elements_entiers
+        else:
+            elements_entiers += [float_or_int(element)]
+    return elements_entiers
 
 # Fonction de parsing du fichier de définition des noeuds au format CTP/CTP+CCVRP
 #       - ligne 1: le dépôt (3 entiers)
@@ -56,8 +59,8 @@ def parser_ligne(ligne):
 #       exemple:  `45  5   9   40`
 def definir_noeuds_depuis_fichier_noeuds(nom_fichier):
     fichier = open(nom_fichier, 'r')
-    numero_ligne = 1    
-    ligne = fichier.readline()
+    numero_ligne = 1
+    numero_ligne_avec_donnee = 1
     
     noeuds = []
     noeud_depot = []
@@ -66,33 +69,31 @@ def definir_noeuds_depuis_fichier_noeuds(nom_fichier):
     rayon_couverture = 0
     nb_vehicules = 0
     capacite = 0
-
     
-    while ligne != "":
-        ligne_entiers = parser_ligne(ligne)     
-
-        if numero_ligne == 1 and ligne_entiers != None:
+    for ligne in fichier:
+        ligne_entiers = parser_ligne(ligne)  
+        if numero_ligne_avec_donnee == 1 and ligne_entiers:
             if len(ligne_entiers) != 1:
                 print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne
                 print >> sys.stderr, "Cette ligne définit la capacité des camions"
                 print >> sys.stderr, "Format: `capacité`"
                 sys.exit(1)
             capacite = ligne_entiers[0]
-        elif numero_ligne == 2 and ligne_entiers != None:
+        elif numero_ligne_avec_donnee == 2 and ligne_entiers:
             if len(ligne_entiers) != 1:
                 print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne   
                 print >> sys.stderr, "Cette ligne correspond au nombre de véhicules/camions"
                 print >> sys.stderr, "Format: `nombre_vehicules`"
                 sys.exit(1)
             nb_vehicules = ligne_entiers[0]
-        elif numero_ligne == 3 and ligne_entiers != None:
+        elif numero_ligne_avec_donnee == 3 and ligne_entiers:
             if len(ligne_entiers) != 1:
                 print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne
                 print >> sys.stderr, "Cette ligne définit le rayon de couverture des noeuds atteignables"
                 print >> sys.stderr, "Format: `valeur_rayon`"
                 sys.exit(1)
             rayon_couverture = ligne_entiers[0]
-        elif numero_ligne == 4 and ligne_entiers != None:
+        elif numero_ligne_avec_donnee == 4 and ligne_entiers:
             if len(ligne_entiers) != 1:
                 print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne   
                 print >> sys.stderr, "Cette ligne correspond au num_sommet du premier sommet 'non-atteignable'"
@@ -102,14 +103,14 @@ def definir_noeuds_depuis_fichier_noeuds(nom_fichier):
                 print >> sys.stderr, "Exemple: `5` pour 1->4 à couvrir, 5->fin atteignables"
                 sys.exit(1)
             debut_noeuds_atteignables = ligne_entiers[0]
-        elif numero_ligne == 5 and ligne_entiers != None:
+        elif numero_ligne_avec_donnee == 5 and ligne_entiers:
             if len(ligne_entiers) != 3:
                 print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne
                 print >> sys.stderr, "Cette ligne définit la position du dépôt"
                 print >> sys.stderr, "Format: `0   x   y`"
                 sys.exit(1)
             noeud_depot = ligne_entiers
-        elif numero_ligne > 5 and ligne_entiers != None:
+        elif numero_ligne_avec_donnee > 5 and ligne_entiers:
             if len(ligne_entiers) > 0 and ligne_entiers[0] < debut_noeuds_atteignables:
                 if len(ligne_entiers) != 4:
                     print >> sys.stderr, "definir_noeuds_depuis_fichier_noeuds(): erreur ligne %d" % numero_ligne           
@@ -128,27 +129,27 @@ def definir_noeuds_depuis_fichier_noeuds(nom_fichier):
                 noeuds_atteignables += [ligne_entiers]
                 
         numero_ligne += 1
-        ligne = fichier.readline()        
+        if ligne_entiers:
+            numero_ligne_avec_donnee += 1
     return [rayon_couverture, nb_vehicules, capacite, noeud_depot, noeuds_a_couvrir, noeuds_atteignables]
 
 #   Depuis les résultats du ctp :
 #       `id_route id1  id2 [...]`
 def definir_chemins_depuis_resultat_glpsol(nom_fichier):
     fichier = open(nom_fichier, 'r')
-    ligne = fichier.readline()
-    numero_ligne = 1
-    
     routes = [] # [num_camion, sommet1, sommet2]
-
-    while ligne != "":
+    numero_ligne_avec_donnee = 1
+    numero_ligne = 1
+    for ligne in fichier:
         ligne_entiers = parser_ligne(ligne)
-        if ligne_entiers != None:
+        if ligne_entiers: # On vérifie qu'il y a au moins un élément
             if len(ligne_entiers) < 3:
                 print >> sys.stderr, "definir_chemins_depuis_resultat_glpsol(): erreur ligne %d" % numero_ligne
                 sys.exit(1)
             routes = routes + [ligne_entiers[:3]]
             numero_ligne += 1
-            ligne = fichier.readline()
+            if ligne_entiers:
+                numero_ligne_avec_donnee += 1
     return routes
     
 def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_atteignables,routes,\
@@ -157,7 +158,6 @@ def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_a
     'graph RoutesCTP \n'\
     '{ \n'\
     '\t layout=neato; \n'\
-    '\t node [shape=point label=""]; \n'\
     '\t edge [dir=none splines=line] \n'\
     '\t rankdir = LR;')
 
