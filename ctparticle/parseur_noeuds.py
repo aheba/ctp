@@ -173,7 +173,6 @@ def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_a
             style=filled width=0.1 color=black pos="%f,%f!"]; ' \
             % (noeud_depot[0],noeud_depot[1]*scaling,noeud_depot[2]*scaling))
     sommets_vus = sommets_vus + [noeud_depot[0]]
-    print avec_numeros
     # Traitement de chaque arc déterminé par le solveur
     for chemin in routes:
         sommets = chemin[1:2+1]
@@ -184,7 +183,7 @@ def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_a
                     % (sommets[0],sommets[1],couleurs_aretes[(num_route-1)%len(couleurs_aretes)]))
     # Traitement des sommets atteignables
     for [sommet,x,y] in noeuds_atteignables:
-        print('\t%d [xlabel="%s" pos="%f,%f!" label=""]; ' \
+        print('\t%d [xlabel="%s" pos="%f,%f!" label="" shape=point]; ' \
                 % (sommet,str(sommet) if avec_numeros else "", x*scaling,y*scaling))
         print('\trayon_%d [pos="%f,%f!" shape=circle fixedsize=true width=%d label=""]; '\
                 % (sommet,x*scaling,y*scaling,rayon*2))
