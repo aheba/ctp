@@ -154,6 +154,8 @@ def definir_chemins_depuis_resultat_glpsol(nom_fichier):
     
 def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_atteignables,routes,\
         avec_numeros,avec_demande):
+    noeud_depot_arr = [i for i in noeud_depot]    
+    noeud_depot_arr[0] = noeuds_atteignables[len(noeuds_atteignables)-1][0] + 1    
     print(
     'graph RoutesCTP \n'\
     '{ \n'\
@@ -178,7 +180,7 @@ def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_a
         sommets = chemin[1:2+1]
         num_route = chemin[0]
         # Traitement de l'arête
-        if sommets[0] != sommets[1] and sommets[1] != noeud_depot[0]:
+        if sommets[0] != sommets[1] and sommets[1] != noeud_depot_arr[0]:
             print('\t%d -- %d [color=%s]; ' \
                     % (sommets[0],sommets[1],couleurs_aretes[(num_route-1)%len(couleurs_aretes)]))
     # Traitement des sommets atteignables
@@ -202,6 +204,8 @@ def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_a
 # C'est pour que le paramètre de durée, c[k,i,j] (dans le CCVRP)
 # ait toutes les valeurs de i et j entre 0 et n+1
 def produire_data_solveur(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_atteignables):
+    noeud_depot_arr = [i for i in noeud_depot]
+    noeud_depot_arr[0] = noeuds_atteignables[len(noeuds_atteignables)-1][0] + 1
     print "data;"
 
     print "# Nombre de sommets à couvrir (I)"
@@ -233,8 +237,8 @@ def produire_data_solveur(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvr
     print(";")
 
     print("param : E : c := ")
-    for p1 in  noeuds_a_couvrir + noeuds_atteignables + [noeud_depot]:
-        for p2 in  noeuds_a_couvrir + noeuds_atteignables + [noeud_depot]:
+    for p1 in  noeuds_a_couvrir + noeuds_atteignables + [noeud_depot] + [noeud_depot_arr]:
+        for p2 in  noeuds_a_couvrir + noeuds_atteignables + [noeud_depot] + [noeud_depot_arr]:
             if p1 != p2:
                 dist = math.sqrt(pow(p1[1]-p2[1],2)+pow(p1[2]-p2[2],2))
                 print("%d %d %.2f" % (p1[0],p2[0],dist))
