@@ -33,20 +33,30 @@ def float_or_int(value):
   except ValueError:
     return float(value)
 
+def is_float_or_int(value):
+  try:
+    float(value)
+    return True
+  except ValueError:
+    return False
+
+
 # Pour parser une chaine de la forme suivante :
 #       `id_point x_coord y_coord qty_demand...`
 # Ex:   `1    8    9    90`
 # NOTE: ne prend que les nombre_infos premiers éléments entiers
 # NOTE: si aucun élément, renvoit None
 def parser_ligne(ligne):
-    element_string = [i for i in re.findall("(\d+[.\d+]*|#)", ligne) if i]
+    element_string = [i for i in re.findall("(\d+[.\d+]*|\\S)", ligne) if i]
     # \D -> le délimiteur est "tout" sauf les entiers
     elements_entiers = []
     for element in element_string:
-        if element is "#":
+        if is_float_or_int(element):
+            elements_entiers += [float_or_int(element)]
+        elif element == "#":
             return elements_entiers
         else:
-            elements_entiers += [float_or_int(element)]
+            return []
     return elements_entiers
 
 # Fonction de parsing du fichier de définition des noeuds au format CTP/CTP+CCVRP
