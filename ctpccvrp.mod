@@ -114,7 +114,7 @@ printf "# La somme des temps d'arrivée chez les noeuds à couvrir est de %.2f\n
 	sum{j in J, k in L} u[j,k];
 
 printf "# %d camions parmi %d ont été pris \n", 
-	sum{k in L} max{i in J,j in J: i<>j} x[i,j,k],l;
+	sum{k in L} max{i in J,j in J union Arrivee: i<>j} x[i,j,k], l;
 
 printf 	"# Camion  SommetA   SommetB   Distance\n";
 printf{k in L, i in J union Depart,j in J union Arrivee: i<>j and x[i,j,k]>0}
