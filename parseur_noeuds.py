@@ -8,15 +8,17 @@
 
 
 #
-# Pour lancer glpsol et générer en même temps le .dot :
-#
+# Pour lancer glpsol et générer en même temps le graphe.dot :
 # python parseur_noeuds.py --dat noeuds.txt > data.dat && \
 # glpsol -m ctp.mod -d data.dat -y resultats_solveur.txt && \
 # python parseur_noeuds.py --numeros --dot noeuds.txt resultats_solveur.txt > graphe.dot
 # 
-# 
 #
-# Ensuite, ouvrir le .dot avec graphviz
+# Pour visualiser le graphe.dot :
+# - Sur MacOS, ouvrir le fichier graphe.dot avec l'interface graphique graphviz
+# - Sinon, utiliser la commande `dot -Tpng -s72 graphe.dot -o graphe.png`
+# NOTE: -s72 permet de régler le ratio position/inch. Dans ce script, le ratio
+# est réglé à 72 points par inch.
 #
 
 
@@ -154,26 +156,47 @@ def definir_chemins_depuis_resultat_glpsol(nom_fichier):
     
 def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_atteignables,routes,\
         avec_numeros,avec_demande):
+    # Calcul du noeud_depot_arrivée qu'on doit ajouter
     noeud_depot_arr = [i for i in noeud_depot]    
-    noeud_depot_arr[0] = noeuds_atteignables[len(noeuds_atteignables)-1][0] + 1    
-    print(
-    'graph RoutesCTP \n'\
-    '{ \n'\
-    '\t layout=neato; \n'\
-    '\t edge [dir=none splines=line] \n'\
-    '\t rankdir = LR;')
+    noeud_depot_arr[0] = noeuds_atteignables[len(noeuds_atteignables)-1][0] + 1
+    
+    # Pourquoi j'utilise points_per_inch ?
+    # - les `pos="3,4"!` sont en points
+    # - les `width="0.1"` et `height="0.1"` sont en inch
+    # 72 correspond au nombre de "points" pour un "inch" dans .dot    
+    # 1 inch * ratio_inch_point = points
+    points_per_inch = 72
 
-    scaling = 72 # Pour que les sommets soient suffisemment écartés dans graphviz
-    # 72 correspond au nombre de points (x,y...) pour un 'inch'. En effet, `pos=`
-    # est en unité de points alors que `width=` a pour unité l'inch.
+    # On veut que les pos=x,y se retrouvent dans l'espace [0,max]
+    x_max = max([p[1] for p in [noeud_depot]+noeuds_atteignables+noeuds_a_couvrir])
+    x_min = min([p[1] for p in [noeud_depot]+noeuds_atteignables+noeuds_a_couvrir])    
+    y_max = max([p[2] for p in [noeud_depot]+noeuds_atteignables+noeuds_a_couvrir])
+    y_min = min([p[2] for p in [noeud_depot]+noeuds_atteignables+noeuds_a_couvrir])    
+
+    pos_max = min([x_max,y_max])
+    pos_min = min([x_min,y_min])
+        
+    def normalise(point) : 
+        return (float(point)-float(pos_min))/(float(pos_max)-float(pos_min)) * 300
+    def point_to_inch(point) : return normalise(point)/float(points_per_inch)
+
     sommets_atteignables_vus = []
     noeuds_atteignables_et_depot = [noeud_depot] + noeuds_atteignables
     couleurs_aretes = ['red','darkorchid','forestgreen','cyan4','orange','cadetblue']
 
+    print \
+    'graph RoutesCTP \n'\
+    '{ \n'\
+    '\t layout=neato; \n'\
+    '\t edge [dir=None splines=line] \n'\
+    '\t rankdir = LR;'
+
     # Traitement du sommet dépôt
-    print('\t%d [label="" xlabel="Dépôt" shape=square fixedsize=true\
-            style=filled width=0.1 color=black pos="%f,%f!"]; ' \
-            % (noeud_depot[0],noeud_depot[1]*scaling,noeud_depot[2]*scaling))
+    print '\t%d [label="" xlabel="Dépôt" shape=square fixedsize=true\
+            style=filled width=%.2f color=black pos="%.2f,%.2f!"]; ' \
+            % (noeud_depot[0],\
+            point_to_inch(0.2),\
+            normalise(noeud_depot[1]),normalise(noeud_depot[2]))
     # Traitement de chaque arc déterminé par le solveur
     for chemin in routes:
         sommets = chemin[1:2+1]
@@ -184,27 +207,33 @@ def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_a
         if sommets[1] not in sommets_atteignables_vus:
             sommets_atteignables_vus += [sommets[1]]
         if sommets[0] != sommets[1] and sommets[1] != noeud_depot_arr[0]:
-            print('\t%d -- %d [color=%s]; ' \
-                    % (sommets[0],sommets[1],couleurs_aretes[(num_route-1)%len(couleurs_aretes)]))
+            print '\t%d -- %d [color=%s]; ' \
+                    % (sommets[0],sommets[1],couleurs_aretes[(num_route-1)%len(couleurs_aretes)])
     # Traitement des sommets atteignables
     for [sommet,x,y] in noeuds_atteignables:
         if sommet in sommets_atteignables_vus:
-            print('\t%d [xlabel="%s" pos="%f,%f!" label="" shape=circle color=black style=filled width=0.1]; ' \
-                % (sommet,str(sommet) if avec_numeros else "", x*scaling,y*scaling))
-            print('\trayon_%d [pos="%f,%f!" shape=circle fixedsize=true width=%d label=""]; '\
-                    % (sommet,x*scaling,y*scaling,rayon*2))
+            print '\t%d [xlabel="%s" pos="%.2f,%.2f!" label="" shape=circle color=black style=filled width=%.2f]; ' \
+                % (sommet,str(sommet) if avec_numeros else "",\
+                normalise(x),normalise(y),\
+                point_to_inch(0.15))
+            print '\trayon_%d [pos="%.2f,%.2f!" shape=circle fixedsize=true width=%.2f label=""]; '\
+                % (sommet,normalise(x),normalise(y),\
+                point_to_inch(rayon*2))
         else:
-            print('\t%d [xlabel="%s" pos="%f,%f!" label="" shape=circle color=gray50 style=filled width=0.1]; ' \
-                % (sommet,str(sommet) if avec_numeros else "", x*scaling,y*scaling))
+            print '\t%d [xlabel="%s" pos="%.2f,%.2f!" label="" shape=circle color=gray50 style=filled width=%.2f]; ' \
+                % (sommet,str(sommet) if avec_numeros else "", \
+                normalise(x),normalise(y),\
+                point_to_inch(0.15))
 
 
     # Traitement des sommets à couvrir
     for [sommet,x,y,qte] in noeuds_a_couvrir:
         xlabel=""
-        xlabel+=("<font color=\'blue\'>"+"("+str(qte)+")" +"</font>") if avec_demande else ""
+        xlabel+=("<font color=\'blue\'>"+"("+str(qte)+")" +"</font> ") if avec_demande else ""
         xlabel+=("<font color=\'black\'>"+str(sommet)+"</font>") if avec_numeros else ""
-        print '\t%d [label="" xlabel=<%s> pos="%f,%f!" color="blue" style=filled shape=triangle fixedsize=true width=0.1 height=0.2]; ' \
-               % (sommet, xlabel, x*scaling,y*scaling)
+        print '\t%d [label="" xlabel=<%s> pos="%.2f,%.2f!" color="blue" style=filled shape=triangle fixedsize=true width=%.2f height=%.2f]; ' \
+               % (sommet, xlabel, normalise(x),normalise(y),\
+               point_to_inch(0.1),point_to_inch(0.2))
     print("}")
 
 # Ajoutons artificiellement un n+1ième point qui sera
