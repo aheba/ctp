@@ -51,7 +51,7 @@ param d{i in I}, >= 0;
 
 ####### Variables de décision #######
 var D{i in I, j in J, k in L},>=0;
-var x{i in J union Depart, j in J union Arrivee, k in L: i<>j}, binary;
+var x{i in J union Depot, j in J union Depot, k in L: i<>j}, binary;
 var y{j in J union Depot, k in L}, binary;
 var u{j in J union Depot, k in L}, >= 0;
 
