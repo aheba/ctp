@@ -119,7 +119,7 @@ printf "# %d camions parmi %d ont été pris \n",
 
 printf 	"# Camion  SommetA   SommetB   Distance\n";
 printf{k in L, i in J union Depart,j in J union Arrivee: i<>j and x[i,j,k]>0}
-		"     %3d      %3d       %.2f\n",
+		"     %3d      %3d      %3d\n",
 		k, i, j;
 
 end;
