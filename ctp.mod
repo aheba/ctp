@@ -114,6 +114,8 @@ printf "# La somme des distances/coûts des tournées est de %.2f\n",
 	sum{i in J union Depart, j in J union Arrivee, k in L: i<>j} c[i,j] * x[i,j,k];
 printf "# La somme des temps d'arrivée chez les noeuds à couvrir est de %.2f\n",
 	sum{j in J, k in L} u[j,k];
+printf "# Au max, le client le plus loin attendra %.2f\n", 
+	max{j in J, k in L} u[j,k];
 printf "# %d camions parmi %d ont été pris \n",
 	sum{k in L} max{i in J,j in J union Arrivee: i<>j} x[i,j,k], l;
 
