@@ -102,10 +102,13 @@ s.t. capacite_vehicule{k in L}:
 #s.t. un_camion_par_noeud_atteignable{j in J}:
 #	sum{k in L} y[j,k] <= 1;
 
-# Contrainte (9)
+# Contrainte (9) pour l=2
 s.t. sub_tour{i in J union Depart, j in J union Arrivee, k in L: i<>j}:
-	u[i,k] + c[i,j] - (1-x[i,j,k])*1000 <= u[j,k];	
-#	u[i,k] - u[j,k] + (m+1)*x[i,j,k] <= m;
+	u[i,k] + c[i,j] - (1-x[i,j,k])*10000 <= u[j,k];
+#	u[i,k] + c[i,j]  - u[j,k] + (m+1)*x[i,j,k] <= 1000;
+#pour l=4
+#s.t. sub_tour{i in J union Arrivee, j in J union Depart, k in L: i<>j}:
+#	u[i,k] + c[i,j] - (1-x[i,j,k])*10000 <= u[j,k];
 
 	
 solve;
