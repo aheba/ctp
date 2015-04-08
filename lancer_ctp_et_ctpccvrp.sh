@@ -28,6 +28,11 @@ res_ctpccvrp=$?
 
 echo "----------------------"
 echo "Résultats du CTP-VRP :"
+cat resultats_ctp.txt
+echo "Résultats du CTP-CCVRP :"
+cat resultats_ctpccvrp.txt
+echo "----------------------"
+echo "Résultats du CTP-VRP :"
 if [ $res_ctp -eq 0 ]; then
 	cat resultats_ctp.txt | head -3
 else
