@@ -207,8 +207,14 @@ def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_a
         if sommets[1] not in sommets_atteignables_vus:
             sommets_atteignables_vus += [sommets[1]]
         if sommets[0] != sommets[1] and sommets[1] != noeud_depot_arr[0]:
-            print '\t%d -- %d [color=%s]; ' \
-                    % (sommets[0],sommets[1],couleurs_aretes[(num_route-1)%len(couleurs_aretes)])
+            couleur = couleurs_aretes[(num_route-1)%len(couleurs_aretes)]
+            if sommets[0] == noeud_depot[0] and avec_numeros:
+                 print '\t%d -- %d [color=%s label=<<font color=\'%s\'>%s</font>>];' \
+                        % (sommets[0],sommets[1],\
+                                couleur,couleur,num_route)
+            else:
+                print '\t%d -- %d [color=%s]; '\
+                        % (sommets[0],sommets[1],couleur)
     # Traitement des sommets atteignables
     for [sommet,x,y] in noeuds_atteignables:
         if sommet in sommets_atteignables_vus:
