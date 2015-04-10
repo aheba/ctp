@@ -108,16 +108,6 @@ s.t. sub_tour{i in J union Depart, j in J union Arrivee, k in L: i<>j}:
 	u[i,k] + c[i,j] - (1-x[i,j,k])*1000 <= u[j,k];	
 solve;
 
-printf "# La somme des distances/coûts des tournées est de %.2f\n", 
-	sum{i in J union Depart, j in J union Arrivee, k in L: i<>j} c[i,j] * x[i,j,k];
-printf "# La somme des temps d'arrivée chez les noeuds à couvrir est de %.2f\n",
-	sum{j in J, k in L} u[j,k];
-printf "# Au max, le client le plus loin attendra %.2f\n", 
-	max{j in J, k in L} u[j,k];
-
-printf "# %d camions parmi %d ont été pris \n", 
-	sum{k in L} max{i in J,j in J union Arrivee: i<>j} x[i,j,k], l;
-
 printf 	"# Quantités livrées à i depuis le noeud j par un camion k\n";
 printf 	"#    i    j  Camion  Qté  Arrivée \n";
 printf{i in I, j in J, k in L: y[j,k] and D[i,j,k]>0} 	
@@ -129,6 +119,17 @@ printf 	"# Camion  SommetA   SommetB\n";
 printf{k in L, i in J union Depart,j in J union Arrivee: i<>j and x[i,j,k]>0}
 		"     %3d      %3d       %3d\n",
 		k, i, j;
+
+printf "# La somme des distances/coûts des tournées est de %.2f\n", 
+	sum{i in J union Depart, j in J union Arrivee, k in L: i<>j} c[i,j] * x[i,j,k];
+printf "# La somme des temps d'arrivée chez les noeuds à couvrir est de %.2f\n",
+	sum{j in J, k in L} u[j,k];
+printf "# Au max, le client le plus loin attendra %.2f\n", 
+	max{j in J, k in L} u[j,k];
+
+printf "# %d camions parmi %d ont été pris \n", 
+	sum{k in L} max{i in J,j in J union Arrivee: i<>j} x[i,j,k], l;
+
 
 end;
 
