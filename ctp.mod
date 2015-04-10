@@ -110,6 +110,9 @@ s.t. sub_tour{i in J union Depart, j in J union Depot, k in L: i<>j}:
 #s.t. sub_tour{i in J union Arrivee, j in J union Depart, k in L: i<>j}:
 #	u[i,k] + c[i,j] - (1-x[i,j,k])*10000 <= u[j,k];
 
+# Contrainte pour empêcher les temps u[j,k] arbitrairement trop grands
+s.t. garder_temps_valides{i in J union Depart, k in L}:
+	u[i,k] <= 10000 * sum{j in J union Depot: i<>j} x[i,j,k];
 	
 solve;
 
