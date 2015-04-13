@@ -1,0 +1,149 @@
+\documentclass[12pt, a4paper, onecolumn, twoside,french,cleardoublepage=plain,openany]{article}
+\usepackage[french]{babel}
+\usepackage[a4paper]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{indentfirst} % Linéa sur les premiers paragraphes
+\usepackage[babel=true]{csquotes} % csquotes va utiliser la langue définie dans babel
+\usepackage{graphicx} % pour inclure les images
+\usepackage[fleqn]{amsmath} % pour certains signes mathématiques
+\usepackage{siunitx} % les unités SI
+\usepackage{amssymb} % pour le signe de convolution
+\usepackage{moreverb} % pour le code c, cpp...
+\usepackage[pdfusetitle]{hyperref} % Pour les liens cliquables et metadata généré
+\usepackage[french,boxed,lined,onelanguage]{algorithm2e}
+\SetAlCapSkip{1em} % Marge entre l'algo et le caption
+%\SetAlCapNameSty{textit} % style du texte du caption des algos
+\usepackage[toc,page]{appendix} % Annexes
+\usepackage{fancyhdr} % Pour \lhead, \rhead... 
+\usepackage[font={it}]{caption}
+\usepackage[backend=bibtex,style=alphabetic,sorting=debug]{biblatex}
+\usepackage{multirow} % Pour colonnes multiples des tableaux
+\usepackage{longtable} % Pour longs tableaux
+\usepackage{array} % Pour \texttt sur tout une colonne
+\usepackage{xcolor} % Pour éviter que footnote ne bug...
+\usepackage{footnote} % Pour les footnotes dans les tableaux
+\makesavenoteenv{tabular} % Pour les footnotes dans les tableaux
+\usepackage{tabularx}
+\usepackage{pdfpages} % Include des pdfs
+\usepackage[nottoc,numbib]{tocbibind} % Pour faire apparaitre la biblio. dans le sommaire
+\usepackage[]{minitoc} % Pour les sommaires intermédiaires
+\usepackage{etoolbox} % Pour le toggle (pour afficher les annexe ou non)
+\usepackage[acronym,toc,shortcuts]{glossaries}
+\usepackage[french]{cleveref} 
+%\bibliography{bibio.bib}
+\newcommand{\code}{\texttt}
+
+\begin{document}
+
+%\title{}
+%\author{Maël Valais}
+%\date{\today}
+%\maketitle
+%\tableofcontents
+
+
+\section{Problématique}\label{Problématique}
+
+Pourquoi comparer le CTP et le CCVRP ?
+
+\section{Introduction}\label{intro}
+
+\section{Définitions}\label{def}
+
+\chapter{Synthèse des textes}\label{Synthèse}
+
+\section{CTP}\label{CTP}
+
+-Caractéristiques
+-> 
+-Pourquoi ça existe ?
+-Dans quel but ?
+-Qu'est-ce qui a poussé à faire cela?
+
+->Graphique<-
+
+\section{CCVRP}\label{CCVRP}
+
+-Caractéristiques
+-> 
+-Pourquoi ça existe ?
+-Dans quel but ?
+-Qu'est-ce qui a poussé à faire cela?
+
+->Graphique<-
+
+\section{Nouvelle solution}\label{NewSol}
+
+\subsection{Modèle mathématique}\label{Modèle}
+
+
+
+Du texte ici, sur la définition du problème
+
+
+
+
+
+\begin{equation}
+Min \sum_{i=0}^{m}\sum_{j=0}^{m}\sum_{k=1}^{l}c_{ij}x_{ijk}
+\end{equation}
+
+s. t. :
+
+\begin{equation}
+\sum_{i=0}^{m}x_{ijk} = y_{jk}   j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\}
+\end{equation}
+
+\begin{equation}
+\sum_{i=0}^{m}x_{jik} = y_{jk}   j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\}
+\end{equation}
+
+\begin{equation}
+\sum_{j=0}^{m}x_{0jk} = 1   k\in\left\{1,2,...,l\right\}
+\end{equation}
+
+\begin{equation}
+\sum_{j=0}^{m}x_{j0k} = 1   k\in\left\{1,2,...,l\right\}
+\end{equation}
+
+\begin{equation}
+\sum_{j=1}^{m}\sum_{k=1}^{l}\alpha_{ij}D_{isjk} \geq d_{is}    i\in\left\{1,2,...,n\right\}, s\in\left\{1,2,...,t\right\}
+\end{equation}
+
+\begin{equation}
+\sum_{i=1}^{n}\sum_{s=1}^{t}w{s}D_{isjk} \leq Q_{k}y_{jk}    k\in\left\{1,2,...,l\right\}, j\in\left\{1,2,...,m\right\}
+\end{equation}
+
+\begin{equation}
+\sum_{s=1}^{t}\sum_{i=1}^{n}\sum_{j=1}^{m}w{s}D_{isjk} \leq Q_{k}    k\in\left\{1,2,...,l\right\}
+\end{equation}
+
+\begin{equation}
+u_{ik} - u_{jk} + (m + 1)x_{ijk} \leq m   i,j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\}
+\end{equation}
+
+\begin{equation}
+x_{ijk} \in\left\{0,1\right\}   i,j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\}
+\end{equation}
+
+\begin{equation}
+y_{jk} \in\left\{0,1\right\}   j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\}
+\end{equation}
+
+\begin{equation}
+u_{ik} \geq 0   i\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\}
+\end{equation}
+
+\begin{equation}
+D_{isjk} \geq 0   i\in\left\{1,2,...,n\right\}, s\in\left\{1,2,...,t\right\}, j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\}
+\end{equation}
+
+
+
+\begin{equation}
+u_{ik} - u_{jk} + Q_{k}x_{ijk} \leq Q_{k} - \sum_{s=1}^{t}\sum_{h=1}^{n}w_{s}D_{hsjk}   i,j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\}
+\end{equation}
+
+
+\end{document}
