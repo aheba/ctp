@@ -17,16 +17,10 @@ if [ ! -f $1 ]; then
 fi
 
 
-python parseur_noeuds.py --dat $1 > data_ctp.dat \
-	&& glpsol -m ctp.mod -d data_ctp.dat -y resultats_ctp.txt \
-	&& python parseur_noeuds.py --numeros --demandes --dot $1 resultats_ctp.txt > graphe_ctp.dot;
-if [ $? -ne 0 ]; then
-	echo "Erreur !"
-	exit 1
-fi
-
-python parseur_noeuds.py --dat $1 > data_ctpccvrp.dat \
-	&& glpsol -m ctpccvrp.mod -d data_ctpccvrp.dat -y resultats_ctpccvrp.txt \
+python parseur_noeuds.py --dat $1 > data.dat \
+	&& glpsol -m ctp.mod -d data.dat -y resultats_ctp.txt \
+	&& python parseur_noeuds.py --numeros --demandes --dot $1 resultats_ctp.txt > graphe_ctp.dot \
+	&& glpsol -m ctpccvrp.mod -d data.dat -y resultats_ctpccvrp.txt \
 	&& python parseur_noeuds.py --numeros --demandes --dot $1 resultats_ctpccvrp.txt > graphe_ctpccvrp.dot
 if [ $? -ne 0 ]; then
 	echo "Erreur !"
