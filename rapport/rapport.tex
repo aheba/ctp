@@ -72,10 +72,9 @@ Comme le suggère \cite{campbell_routing_2008}, la minimisation des coûts lors 
 Le CTP répond à la problématique de l’accès aux sites de livraison dans le cas humanitaire, mais sans prendre en compte les temps d’arrivée sur les sites de distributions (noeuds atteignables). En effet, le CTP se base sur le modèle classique du voyageur de commerce (TSP) pour le choix de l’itinéraire.
 
 Nous proposons donc une version du CTP intégrant, au lieu d’un TSP classique, un CCVRP.
-
-\begin{table}[h] \centering \begin{tabular}{@{}ll@{}} \toprule
+\begin{table}[h] \centering \begin{tabular}{p{8cm} p{5cm}} \toprule
 \multicolumn{1}{c}{CTP} & \multicolumn{1}{c}{CCVRP} \\ \midrule
-Permet de prendre en compte des situations où tous les endroits (noeuds) ne sont pas atteignables, ou lorsqu'on ne souhaite visiter qu'un sous-ensemble de noeuds & Nécessite que tous les noeuds soient atteignables \\
+Permet de prendre en compte des situations où tous les endroits (noeuds) ne sont pas atteignables, ou lorsqu'on ne souhaite visiter qu'un sous-ensemble de noeuds & Nécessite que tous les noeuds soient atteignables \\ \\
 Basé sur une minimisation des coûts & Basé sur une minimisation des temps d'arrivée \\ \bottomrule
 \end{tabular} \caption{Tableau comparatif CTP vs. CCVRP} \label{comparatif}
 \end{table}
