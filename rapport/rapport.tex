@@ -1,37 +1,29 @@
 \documentclass[12pt, a4paper, onecolumn, twoside,french,cleardoublepage=plain,openany]{article}
 \usepackage[french]{babel}
 \usepackage[a4paper]{geometry}
-\usepackage[utf8]{inputenc}
+\usepackage[utf8]{inputenc} % En unicode
 \usepackage[T1]{fontenc}
+\usepackage[pdfusetitle]{hyperref} % Pour les liens cliquables et metadata généré
 \usepackage{indentfirst} % Linéa sur les premiers paragraphes
-\usepackage[babel=true]{csquotes} % csquotes va utiliser la langue définie dans babel
+\usepackage[babel=true]{csquotes} % permet de faire \enquote{a} (« a »)
 \usepackage{graphicx} % pour inclure les images
 \usepackage[fleqn]{amsmath} % pour certains signes mathématiques
-\usepackage{siunitx} % les unités SI
 \usepackage{amssymb} % pour le signe de convolution
-\usepackage{moreverb} % pour le code c, cpp...
-\usepackage[pdfusetitle]{hyperref} % Pour les liens cliquables et metadata généré
 \usepackage[french,boxed,lined,onelanguage]{algorithm2e}
 \SetAlCapSkip{1em} % Marge entre l'algo et le caption
 %\SetAlCapNameSty{textit} % style du texte du caption des algos
 \usepackage[toc,page]{appendix} % Annexes
 \usepackage{fancyhdr} % Pour \lhead, \rhead... 
 \usepackage[font={it}]{caption}
-\usepackage[backend=bibtex,style=alphabetic,sorting=debug]{biblatex}
 \usepackage{multirow} % Pour colonnes multiples des tableaux
-\usepackage{longtable} % Pour longs tableaux
-\usepackage{array} % Pour \texttt sur tout une colonne
-\usepackage{xcolor} % Pour éviter que footnote ne bug...
-\usepackage{footnote} % Pour les footnotes dans les tableaux
-\makesavenoteenv{tabular} % Pour les footnotes dans les tableaux
-\usepackage{tabularx}
 \usepackage{pdfpages} % Include des pdfs
 \usepackage[nottoc,numbib]{tocbibind} % Pour faire apparaitre la biblio. dans le sommaire
-\usepackage[]{minitoc} % Pour les sommaires intermédiaires
-\usepackage{etoolbox} % Pour le toggle (pour afficher les annexe ou non)
 \usepackage[acronym,toc,shortcuts]{glossaries}
-\usepackage[french]{cleveref} 
-\usepackage{booktabs}
+\usepackage[french]{cleveref} % permet de faire \cref au lieu de \ref
+\usepackage{booktabs} % pour \toprule (un style de tableau)
+\usepackage{float} % pour empêcher les figures, tables... de bouger
+
+\usepackage[backend=bibtex,style=alphabetic,sorting=debug]{biblatex}
 \bibliography{bibiographie.bib}
 \newcommand{\code}{\texttt}
 
@@ -55,6 +47,12 @@ Permet de résoudre
 Comme l'explique l'article \cite{campbell_routing_2008}, les approches classiques de calcul des tournées se basent sur le coût de transport, sans prendre en compte les aspects humains. Il est notamment expliqué que %...
 
 Le CCVRP est issu de cette réflexion %...
+
+
+\begin{figure}[!ht] \centering
+	\includegraphics[width=0.999\textwidth]{figures/ctp_sans_vrp}
+	\caption[Image générée par une corrélation]{Exemple de solution d'un CTP. Nous avons utilisé notre modèle de CTP-VRP en limitant le nombre de véhicules à un pour produire ce graphe.} \label{fig_correlation} 
+\end{figure}
 
 
 \begin{table}[h] \centering
@@ -86,7 +84,7 @@ Temps d'arrivée maximal & 7,19 & 4,24 & -41,0\% \\ \bottomrule
 \begin{table}[h] \centering
 \begin{tabular}{@{}llll@{}}
 \toprule % utilise \usepackage{booktabs}
-/ & CTP avec VRP & CTP avec CCVRP & Écart relatif \\ \midrule
+ & CTP avec VRP & CTP avec CCVRP & Écart relatif \\ \midrule
 Nombre de camions & 2 & 4 & +100,0\% \\
 Distance parcourue & 17,09 & 24,18 & +41,5\% \\
 Somme des temps d'arrivée & 15,07 & 12,09 & -19,8\% \\
