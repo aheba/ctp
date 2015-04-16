@@ -132,66 +132,25 @@ Temps d'arrivée maximal & 7,19 & 4,24 & -41,0\% \\ \bottomrule
 \end{table}
 
 \section*{Annexes}
-\subsection{Modèle mathématique du CTP-CCVRP}\label{modele}
+\subsection{Modèle mathématique du CTP-VRP}\label{modele_ctp_vrp}
 \begin{equation}
 Min \sum_{i=0}^{m}\sum_{j=0}^{m}\sum_{k=1}^{l}c_{ij}x_{ijk}
 \end{equation}
-
-s. t. :
-
-\begin{equation}
-\sum_{i=0}^{m}x_{ijk} = y_{jk}   j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\}
-\end{equation}
-
-\begin{equation}
-\sum_{i=0}^{m}x_{jik} = y_{jk}   j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\}
-\end{equation}
-
-\begin{equation}
-\sum_{j=0}^{m}x_{0jk} = 1   k\in\left\{1,2,...,l\right\}
-\end{equation}
-
-\begin{equation}
-\sum_{j=0}^{m}x_{j0k} = 1   k\in\left\{1,2,...,l\right\}
-\end{equation}
-
-\begin{equation}
-\sum_{j=1}^{m}\sum_{k=1}^{l}\alpha_{ij}D_{isjk} \geq d_{is}    i\in\left\{1,2,...,n\right\}, s\in\left\{1,2,...,t\right\}
-\end{equation}
-
-\begin{equation}
-\sum_{i=1}^{n}\sum_{s=1}^{t}w{s}D_{isjk} \leq Q_{k}y_{jk}    k\in\left\{1,2,...,l\right\}, j\in\left\{1,2,...,m\right\}
-\end{equation}
-
-\begin{equation}
-\sum_{s=1}^{t}\sum_{i=1}^{n}\sum_{j=1}^{m}w{s}D_{isjk} \leq Q_{k}    k\in\left\{1,2,...,l\right\}
-\end{equation}
-
-\begin{equation}
-u_{ik} - u_{jk} + (m + 1)x_{ijk} \leq m   i,j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\}
-\end{equation}
-
-\begin{equation}
-x_{ijk} \in\left\{0,1\right\}   i,j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\}
-\end{equation}
-
-\begin{equation}
-y_{jk} \in\left\{0,1\right\}   j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\}
-\end{equation}
-
-\begin{equation}
-u_{ik} \geq 0   i\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\}
-\end{equation}
-
-\begin{equation}
-D_{isjk} \geq 0   i\in\left\{1,2,...,n\right\}, s\in\left\{1,2,...,t\right\}, j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\}
-\end{equation}
-
-
-
-\begin{equation}
-u_{ik} - u_{jk} + Q_{k}x_{ijk} \leq Q_{k} - \sum_{s=1}^{t}\sum_{h=1}^{n}w_{s}D_{hsjk}   i,j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\}
-\end{equation}
-
+sujet aux contraintes :
+\begin{gather}
+\sum_{i=0}^{m}x_{ijk} = y_{jk}   j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\} \\ 
+\sum_{i=0}^{m}x_{jik} = y_{jk}   j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\} \\ 
+\sum_{j=0}^{m}x_{0jk} = 1   k\in\left\{1,2,...,l\right\} \\ 
+\sum_{j=0}^{m}x_{j0k} = 1   k\in\left\{1,2,...,l\right\} \\
+\sum_{j=1}^{m}\sum_{k=1}^{l}\alpha_{ij}D_{isjk} \geq d_{is}    i\in\left\{1,2,...,n\right\}, s\in\left\{1,2,...,t\right\} \\
+\sum_{i=1}^{n}\sum_{s=1}^{t}w{s}D_{isjk} \leq Q_{k}y_{jk}    k\in\left\{1,2,...,l\right\}, j\in\left\{1,2,...,m\right\} \\
+\sum_{s=1}^{t}\sum_{i=1}^{n}\sum_{j=1}^{m}w{s}D_{isjk} \leq Q_{k}    k\in\left\{1,2,...,l\right\} \\
+u_{ik} - u_{jk} + (m + 1)x_{ijk} \leq m   i,j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\} \\
+x_{ijk} \in\left\{0,1\right\}   i,j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\} \\
+y_{jk} \in\left\{0,1\right\}   j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\}\\ 
+u_{ik} \geq 0   i\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\}\\ 
+D_{isjk} \geq 0   i\in\left\{1,2,...,n\right\}, s\in\left\{1,2,...,t\right\}, j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\}\\ 
+u_{ik} - u_{jk} + Q_{k}x_{ijk} \leq Q_{k} - \sum_{s=1}^{t}\sum_{h=1}^{n}w_{s}D_{hsjk}   i,j\in\left\{1,2,...,m\right\}, k\in\left\{1,2,...,l\right\} \\
+\end{gather}
 
 \end{document}
