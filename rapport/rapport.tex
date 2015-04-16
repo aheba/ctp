@@ -31,6 +31,7 @@
 \usepackage{etoolbox} % Pour le toggle (pour afficher les annexe ou non)
 \usepackage[acronym,toc,shortcuts]{glossaries}
 \usepackage[french]{cleveref} 
+\usepackage{booktabs}
 \bibliography{bibiographie.bib}
 \newcommand{\code}{\texttt}
 
@@ -42,49 +43,61 @@
 %\maketitle
 %\tableofcontents
 
+\section{Introduction}\label{introduction}
+La logistique de gestion de crise humanitaire se distingue de la logistique classique par les contraintes humaines qu'elle impose. 
+Lors d'une crise humanitaire, il arrive que les personnes ne soient plus atteignables
+%...
 
-\section{Problématique}\label{Problématique}
+\section{État de l'art}
+\subsection{L'approche par couverture : le CTP} \label{CTP}
+Permet de résoudre 
+\subsection{Minimisation des coûts et facteurs humains : le CCVRP} \label{CCVRP}
+Comme l'explique l'article \cite{campbell_routing_2008}, les approches classiques de calcul des tournées se basent sur le coût de transport, sans prendre en compte les aspects humains. Il est notamment expliqué que %...
 
-Pourquoi comparer le CTP et le CCVRP ?
-
-\section{Introduction}\label{intro}
-
-\section{Définitions}\label{def}
-
-\chapter{Synthèse des textes}\label{Synthèse}
-
-\section{CTP}\label{CTP}
-
--Caractéristiques
--> 
--Pourquoi ça existe ?
--Dans quel but ?
--Qu'est-ce qui a poussé à faire cela?
-
-->Graphique<-
-
-\section{CCVRP}\label{CCVRP}
-
--Caractéristiques
--> 
--Pourquoi ça existe ?
--Dans quel but ?
--Qu'est-ce qui a poussé à faire cela?
-
-->Graphique<-
-
-\section{Nouvelle solution}\label{NewSol}
-
-\subsection{Modèle mathématique}\label{Modèle}
+Le CCVRP est issu de cette réflexion %...
 
 
+\begin{table}[h] \centering
+\begin{tabular}{@{}llll@{}}
+\toprule % utilise \usepackage{booktabs}
+ & CTP avec VRP & CTP avec CCVRP & Écart relatif \\ \midrule
+Nombre de camions & 2 & 2 & +0,0\% \\
+Distance parcourue & 17,09 & 17,09 & +0,0\% \\
+Somme des temps d'arrivée & 15,07 & 15,07 & +0,0\% \\
+Temps d'arrivée maximal & 7,19 & 7,19 & +0,0\% \\ \bottomrule
+\end{tabular}
+\caption{Avec deux camions disponibles}
+\label{deux_camions}
+\end{table}
 
-Du texte ici, sur la définition du problème
+\begin{table}[h] \centering
+\begin{tabular}{@{}llll@{}}
+\toprule % utilise \usepackage{booktabs}
+ & CTP avec VRP & CTP avec CCVRP & Écart relatif \\ \midrule
+Nombre de camions & 2 & 3 & +50,0\% \\
+Distance parcourue & 17,09 & 22,17 & +29,7\% \\
+Somme des temps d'arrivée & 15,07 & 12,12 & -19,6\% \\
+Temps d'arrivée maximal & 7,19 & 4,24 & -41,0\% \\ \bottomrule
+\end{tabular}
+\caption{Avec trois camions disponibles}
+\label{trois_camions}
+\end{table}
 
+\begin{table}[h] \centering
+\begin{tabular}{@{}llll@{}}
+\toprule % utilise \usepackage{booktabs}
+/ & CTP avec VRP & CTP avec CCVRP & Écart relatif \\ \midrule
+Nombre de camions & 2 & 4 & +100,0\% \\
+Distance parcourue & 17,09 & 24,18 & +41,5\% \\
+Somme des temps d'arrivée & 15,07 & 12,09 & -19,8\% \\
+Temps d'arrivée maximal & 7,19 & 4,24 & -41,0\% \\ \bottomrule
+\end{tabular}
+\caption{Avec quatre camions disponibles}
+\label{quatre_camions}
+\end{table}
 
-
-
-
+\section*{Annexes}
+\subsection{Modèle mathématique du CTP-CCVRP}\label{modele}
 \begin{equation}
 Min \sum_{i=0}^{m}\sum_{j=0}^{m}\sum_{k=1}^{l}c_{ij}x_{ijk}
 \end{equation}
