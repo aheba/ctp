@@ -115,6 +115,8 @@ s.t. garder_temps_valides{i in J union Depart, k in L}:
 	u[i,k] <= 10000 * sum{j in J union Depot: i<>j} x[i,j,k];
 	
 solve;
+display sub_tour;
+display u;
 
 printf 	"# Quantités livrées à i depuis le noeud j par un camion k\n";
 printf 	"#    i    j  Camion  Qté  Arrivée \n";

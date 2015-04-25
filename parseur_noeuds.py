@@ -176,6 +176,7 @@ def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_a
     # 72 correspond au nombre de "points" pour un "inch" dans .dot    
     # 1 inch * ratio_inch_point = points
     points_per_inch = 72
+    normalisation = 300
 
     # On veut que les pos=x,y se retrouvent dans l'espace [0,max]
     x_max = max([p[1] for p in [noeud_depot]+noeuds_atteignables+noeuds_a_couvrir])
@@ -187,7 +188,7 @@ def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_a
     pos_min = min([x_min,y_min])
         
     def normalise(point) : 
-        return (float(point)-float(pos_min))/(float(pos_max)-float(pos_min)) * 300
+        return (float(point)-float(pos_min))/(float(pos_max)-float(pos_min)) * normalisation
     def point_to_inch(point) : return normalise(point)/float(points_per_inch)
 
     sommets_atteignables_vus = []
@@ -199,6 +200,7 @@ def tracer_dot(rayon,nb_vehicules,capacite,noeud_depot,noeuds_a_couvrir,noeuds_a
     '{ \n'\
     '\t layout=neato; \n'\
     '\t edge [dir=None splines=line] \n'\
+    '\t node [fontsize=10] \n'\
     '\t rankdir = LR;'
 
     # Traitement du sommet dépôt

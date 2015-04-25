@@ -102,11 +102,16 @@ s.t. capacite_vehicule{k in L}:
 #s.t. un_camion_par_noeud_atteignable{j in J}:
 #	sum{k in L} y[j,k] <= 1;
 
+s.t. contrainte_qui_sauve_merci_abdel{i in J union Arrivee,k in L}:
+    x[i,0,k] = 0;
+
 # Contrainte (9)
 s.t. sub_tour{i in J union Depart, j in J union Arrivee, k in L: i<>j}:
 #	u[i,k] - u[j,k] + (m+1)*x[i,j,k] <= m;
-	u[i,k] + c[i,j] - (1-x[i,j,k])*1000 <= u[j,k];	
+	u[i,k] + c[i,j] - (1-x[i,j,k])*10000 <= u[j,k];
 solve;
+display sub_tour;
+display u;
 
 printf 	"# Quantités livrées à i depuis le noeud j par un camion k\n";
 printf 	"#    i    j  Camion  Qté  Arrivée \n";

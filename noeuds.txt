@@ -3,10 +3,10 @@
 # - les noeuds à couvrir de 1 à 49 (le numéro 50 est arbitraire)
 # - les noeuds atteignables de 50 à la fin
 
-10 # Capacité des camions
-3 # Nombre de véhicules
-2 	# Rayon de couverture des sommets atteignables
-50 	# Numéro noeud à partir duquel on commence les noeuds atteignables
+200 # Capacité des camions
+1 # Nombre de véhicules
+1.5	# Rayon de couverture des sommets atteignables
+13 	# Numéro noeud à partir duquel on commence les noeuds atteignables
 
 # Le noeud dépôt 
 # Format : 0 x y
@@ -14,25 +14,30 @@
 
 # Les noeuds à couvrir
 # Format : numéro_noeud x y quantité_demandée
-1	4	5	1	
-2	5	1	1
-3	6	3	1
-4	0	1	1
-5	3	0	1
+1	4	4	2
+2	3.2	1.5	1
+3	5.5	3	2
+4	1	1.5	2
+5	3	0.5	3
 6	4	3	1
-7	0.8	2	3 # on peut mettre des x/y réels
-8	4	2	10
-#9	0	4	1
-#10	1	5	1
+7	0.8	2.5	1 # on peut mettre des x/y réels
+8	4	2	2
+9	0	3	1
+10	2	4.5	4
+11	2	3	1
+12	5	1.5	2
 
 # Début des noeuds atteignables
 # Format : numéro_noeud x y (pas de quantité ici)
 # NOTE: j'ai mis 50 pour avoir de la marge pour pouvoir
 # ajouter des noeuds atteignables
-50	5	3		
-51	2.8	4
-52	0	2
-53	3.0	1
-54	0	5
+13	5	2.5		
+14	3	3.8
+15	0	2
+16	4.2	1
+17	1	3.5
+18	2	1
+19	2.2	2.4
+20	5	3.5
 
 
