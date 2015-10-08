@@ -3,7 +3,7 @@ Logistique de crise et aide humanitaire
 
 Lors du [TER](https://sites.google.com/site/term1info/) du M1 informatique de l'université Toulouse 3 - Paul Sabatier, nous avons effectué un état de l'art des méthodes utilisées en *recherche opérationnelle* pour optimiser le routage de véhicules.
 
-Ce dépôt permet de mettre à disposition nos travaux sur les formulations en programmation linéaire des problèmes du *CTP* et du *CCVRP*.
+Ce dépôt permet de mettre à disposition nos travaux sur les formulations en programmation linéaire des problèmes du *CTP* et du *CCVRP*. Vous pouvez en outre accéder au [rapport](https://github.com/aheba/ctp/blob/master/rapport-ter-aide-humanitaire.pdf) et à la [soutenance](https://github.com/aheba/ctp/blob/master/soutenance-ter-aide-humanitaire.pdf).
 
 # Le CTP-VRP
 Le fichier `ctp.mod` contient le modèle en programmation linéaire du CTP modifié que nous avons utilisé comme référence. Nous l'avons appelé *CTP-VRP*, qui se différencie du CTP classique par les points suivants :
